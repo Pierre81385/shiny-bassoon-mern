@@ -2,21 +2,21 @@ const router = require("express").Router();
 let Service = require("../models/Service");
 
 //read all
-router.route("/services").get((req, res) => {
+router.route("/").get((req, res) => {
   Service.find()
     .then((services) => res.status(200).json(services))
     .catch((err) => res.status(400).json("Error: " + err));
 });
 
 //read one
-router.route("/services/:id").get((req, res) => {
+router.route("/:id").get((req, res) => {
   Service.findById(req.params.id)
     .then((services) => res.status(200).json(services))
     .catch((err) => res.status(400).json("Error: " + err));
 });
 
 //create
-router.route("/services/add").post((req, res) => {
+router.route("/add").post((req, res) => {
   const name = req.body.name;
   const description = req.body.description;
 
@@ -32,11 +32,30 @@ router.route("/services/add").post((req, res) => {
 });
 
 //update
-router.route("/services/:id").put((req, res) => {
+router.route("/:id").put((req, res) => {
   const { id } = req.params;
-  const service = Service.findByIdAndUpdate(id, req.body);
+  Service.findByIdAndUpdate(id, {
+    name: req.body.name,
+    description: req.body.description,
+  })
+    .then(() => {
+      res.status(200).json("Service updated!");
+    })
+    .catch((err) => {
+      res.status(400).json("Error: " + err);
+    });
 });
 
 //delete
+router.route("/:id").delete((req, res) => {
+  const { id } = req.params;
+  Service.findByIdAndDelete(id)
+    .then(() => {
+      res.status(200).json("Service deleted!");
+    })
+    .catch((err) => {
+      res.status(400).json("Error: " + err);
+    });
+});
 
 module.exports = router;

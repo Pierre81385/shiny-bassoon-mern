@@ -11,7 +11,7 @@ app.use(express.json());
 
 const ServiceRouter = require("./routes/ServiceAPI");
 
-app.use("/api", ServiceRouter);
+app.use("/services", ServiceRouter);
 
 const uri = process.env.ATLAS_URI;
 mongoose.connect(uri, {
