@@ -1,20 +1,6 @@
 const router = require("express").Router();
 let Service = require("../models/Service");
 
-//read all
-router.route("/").get((req, res) => {
-  Service.find()
-    .then((services) => res.status(200).json(services))
-    .catch((err) => res.status(400).json("Error: " + err));
-});
-
-//read one
-router.route("/:id").get((req, res) => {
-  Service.findById(req.params.id)
-    .then((services) => res.status(200).json(services))
-    .catch((err) => res.status(400).json("Error: " + err));
-});
-
 //create
 router.route("/add").post((req, res) => {
   const name = req.body.name;
@@ -28,6 +14,20 @@ router.route("/add").post((req, res) => {
   newService
     .save()
     .then(() => res.status(200).json("Service added!"))
+    .catch((err) => res.status(400).json("Error: " + err));
+});
+
+//read all
+router.route("/").get((req, res) => {
+  Service.find()
+    .then((services) => res.status(200).json(services))
+    .catch((err) => res.status(400).json("Error: " + err));
+});
+
+//read one
+router.route("/:id").get((req, res) => {
+  Service.findById(req.params.id)
+    .then((services) => res.status(200).json(services))
     .catch((err) => res.status(400).json("Error: " + err));
 });
 

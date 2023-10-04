@@ -10,8 +10,12 @@ app.use(cors());
 app.use(express.json());
 
 const ServiceRouter = require("./routes/ServiceAPI");
+const ProductRouter = require("./routes/ProductsAPI");
+const UserRouter = require("./routes/UsersAPI");
 
 app.use("/services", ServiceRouter);
+app.use("/products", ProductRouter);
+app.use("/users", UserRouter);
 
 const uri = process.env.ATLAS_URI;
 mongoose.connect(uri, {
