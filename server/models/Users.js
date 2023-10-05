@@ -20,49 +20,11 @@ const userSchema = new Schema({
     required: true,
     minlength: 5,
   },
-  streetAddress1: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-  },
-  streetAddress2: {
+  avatar: {
     type: String,
     required: false,
     unique: false,
-    trim: true,
   },
-  city: {
-    type: String,
-    required: true,
-    unique: false,
-    trim: true,
-  },
-  state: {
-    type: String,
-    required: true,
-    unique: false,
-    trim: true,
-  },
-  zipcode: {
-    type: String,
-    required: true,
-    unique: false,
-    maxlength: 5,
-    trim: true,
-  },
-  product: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Product",
-    },
-  ],
-  service: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Service",
-    },
-  ],
 });
 
 userSchema.pre("save", async function (next) {

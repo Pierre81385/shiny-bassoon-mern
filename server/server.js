@@ -9,13 +9,11 @@ const port = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-const ServiceRouter = require("./routes/ServiceAPI");
-const ProductRouter = require("./routes/ProductsAPI");
 const UserRouter = require("./routes/UsersAPI");
+const RoomRouter = require("./routes/RoomsAPI");
 
-app.use("/services", ServiceRouter);
-app.use("/products", ProductRouter);
 app.use("/users", UserRouter);
+app.use("/rooms", RoomRouter);
 
 const uri = process.env.ATLAS_URI;
 mongoose.connect(uri, {
