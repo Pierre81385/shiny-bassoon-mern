@@ -14,6 +14,12 @@ const roomSchema = new Schema(
       required: true,
       unique: true,
     },
+    messages: [
+      {
+        user: String,
+        content: String,
+      },
+    ],
   },
   {
     timestamps: true,

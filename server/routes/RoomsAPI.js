@@ -47,8 +47,8 @@ router.route("/:id").put((req, res) => {
 
 //join
 router.route("/:id/join/:userid").put((req, res) => {
-  const { id } = new mongoose.Types.ObjectId(req.params.id);
-  const { uid } = req.params.userid;
+  const id = new mongoose.Types.ObjectId(req.params.id);
+  const uid = req.params.userid;
   Room.findOneAndUpdate(
     { _id: id },
     {
@@ -68,8 +68,8 @@ router.route("/:id/join/:userid").put((req, res) => {
 
 //leave
 router.route("/:id/leave/:userid").put((req, res) => {
-  const { id } = new mongoose.Types.ObjectId(req.params.id);
-  const { uid } = req.params.userid;
+  const id = new mongoose.Types.ObjectId(req.params.id);
+  const uid = req.params.userid;
   Room.findOneAndUpdate(
     { _id: id },
     {
@@ -83,6 +83,32 @@ router.route("/:id/leave/:userid").put((req, res) => {
   )
     .then(() => {
       res.status(200).json("Member removed!");
+    })
+    .catch((err) => {
+      res.status(400).json("Error: " + err);
+    });
+});
+
+//message
+router.route("/:id/message/:userid").put((req, res) => {
+  const id = new mongoose.Types.ObjectId(req.params.id);
+  const uid = req.params.userid;
+  Room.findOneAndUpdate(
+    { _id: id },
+    {
+      $addToSet: {
+        messages: {
+          user: uid,
+          content: req.body.content,
+        },
+      },
+    },
+    {
+      new: true,
+    }
+  )
+    .then(() => {
+      res.status(200).json("Message sent!");
     })
     .catch((err) => {
       res.status(400).json("Error: " + err);
