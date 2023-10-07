@@ -67,7 +67,6 @@ export default function UserRegistration() {
     </>
   ) : (
     <>
-      <SiteNav />
       <h2>User Registration</h2>
 
       <Form onSubmit={handleSubmit}>

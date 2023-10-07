@@ -4,10 +4,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./components/Home";
 import UserRegistration from "./components/UserRegistration";
 import AllUsers from "./components/AllUsers";
+import SiteNav from "./components/Nav";
 
 export default function App() {
   return (
     <div>
+      <SiteNav />
       <BrowserRouter>
         <Routes>
           <Route exact path="/home" element={<Home />}></Route>

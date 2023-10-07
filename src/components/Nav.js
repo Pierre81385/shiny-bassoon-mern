@@ -1,46 +1,33 @@
-import React, { useState } from "react";
-import Nav from "react-bootstrap/Nav";
+import React from "react";
+import Container from "react-bootstrap/Container";
+import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
 
 export default function SiteNav() {
-  const [key, setKey] = useState("/home");
-
   return (
-    <div>
-      <Nav activeKey={key}>
-        <Nav.Item>
-          <Nav.Link
-            href="/home"
-            eventKey="/home"
-            onClick={() => {
-              setKey("/home");
-            }}
-          >
-            Home
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link
-            href="/users/registration"
-            eventKey="/users/registration"
-            onClick={() => {
-              setKey("/users/registration");
-            }}
-          >
-            New Users
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link
-            href="/users/all"
-            eventKey="/users/all"
-            onClick={() => {
-              setKey("/users/all");
-            }}
-          >
-            All Users
-          </Nav.Link>
-        </Nav.Item>
-      </Nav>
-    </div>
+    <>
+      <Navbar className="bg-body-tertiary">
+        <Container>
+          <Navbar.Brand href="#home">
+            <img
+              alt=""
+              src="/img/logo.svg"
+              width="30"
+              height="30"
+              className="d-inline-block align-top"
+            />{" "}
+            React Bootstrap
+          </Navbar.Brand>
+        </Container>
+        <NavDropdown title="Dropdown" id="basic-nav-dropdown">
+          <NavDropdown.Item href="/users/registration">
+            Register
+          </NavDropdown.Item>
+          <NavDropdown.Item href="/users/all">Users</NavDropdown.Item>
+          <NavDropdown.Divider />
+          <NavDropdown.Item href="/home">HOME</NavDropdown.Item>
+        </NavDropdown>
+      </Navbar>
+    </>
   );
 }

@@ -41,7 +41,6 @@ export default function AllUsers() {
     </>
   ) : (
     <>
-      <SiteNav />
       {resp.map(({ name, email }) => {
         return (
           <Container>
