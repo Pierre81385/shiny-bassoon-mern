@@ -1,50 +1,75 @@
 import React, { useState } from "react";
-import { Form, Button } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/esm/Container";
+import Form from "react-bootstrap/Form";
 import axios from "axios";
+import { Navigate } from "react-router-dom";
+import SiteNav from "./Nav";
 
-function UserRegistration() {
+export default function UserRegistration() {
   // State to hold user input values
-  const [reqData, setReqData] = useState({
+  const [req, setReq] = useState({
     name: "",
     email: "",
     password: "",
   });
 
-  const [resp, setResp] = React.useState(null);
+  const [resp, setResp] = useState(null);
+  const [success, setSuccess] = useState(false);
 
   // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     // You can send the formData to your backend API for user registration here
-    console.log(reqData);
+    console.log(req);
     axios
       .post(`http://localhost:4200/users/add`, {
-        name: reqData.name,
-        email: reqData.email,
-        password: reqData.password,
+        name: req.name,
+        email: req.email,
+        password: req.password,
+      })
+      .catch((error) => {
+        return (
+          <Container>
+            <h3>{error}</h3>
+            <Button
+              onClick={() => {
+                <Navigate to="/users/registration" />;
+              }}
+            ></Button>
+          </Container>
+        );
       })
       .then((response) => {
         setResp(response.data);
-        setReqData({
+        localStorage.setItem("email", resp.email);
+        setReq({
           name: "",
           email: "",
           password: "",
         });
+        setSuccess(true);
       });
   };
 
   // Function to handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setReqData({
-      ...reqData,
+    setReq({
+      ...req,
       [name]: value,
     });
   };
 
-  return (
-    <div className="user-registration">
+  return success ? (
+    <>
+      <Navigate to="/users/all" />;
+    </>
+  ) : (
+    <>
+      <SiteNav />
       <h2>User Registration</h2>
+
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="name">
           <Form.Label>Name</Form.Label>
@@ -52,7 +77,7 @@ function UserRegistration() {
             type="text"
             placeholder="Enter your name"
             name="name"
-            value={reqData.name}
+            value={req.name}
             onChange={handleInputChange}
             required
           />
@@ -64,7 +89,7 @@ function UserRegistration() {
             type="email"
             placeholder="Enter your email"
             name="email"
-            value={reqData.email}
+            value={req.email}
             onChange={handleInputChange}
             required
           />
@@ -76,7 +101,7 @@ function UserRegistration() {
             type="password"
             placeholder="Enter your password"
             name="password"
-            value={reqData.password}
+            value={req.password}
             onChange={handleInputChange}
             required
           />
@@ -85,10 +110,7 @@ function UserRegistration() {
         <Button variant="primary" type="submit">
           Register
         </Button>
-        <Form.Text>{resp}</Form.Text>
       </Form>
-    </div>
+    </>
   );
 }
-
-export default UserRegistration;
