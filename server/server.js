@@ -28,3 +28,11 @@ connection.once("open", () => {
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
 });
+
+app.use(
+  cors({
+    origin: ["http://localhost:4200"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);

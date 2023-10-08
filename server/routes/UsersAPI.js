@@ -1,21 +1,68 @@
 const router = require("express").Router();
 const User = require("../models/Users");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 
-router.route("/add").post((req, res) => {
-  const name = req.body.name;
-  const email = req.body.email;
-  const password = req.body.password;
+//create new user
+router.route("/register").post(async (req, res) => {
+  const user = req.body;
+  const usernameTaken = await User.findOne({ username: user.username });
+  const emailTaken = await User.findOne({ email: user.email });
 
-  const newUser = new User({
-    name,
-    email,
-    password,
+  if (usernameTaken || emailTaken) {
+    res.json({ message: "Username or email address already in use." });
+  } else {
+    user.password = await bcrypt.hash(req.body.password, 10);
+    const newUser = new User({
+      username: user.username.toLowerCase(),
+      email: user.email.toLowerCase(),
+      password: user.password,
+    });
+    newUser
+      .save()
+      .then(() => {
+        res.status(200).json({ message: "User added!" });
+      })
+      .catch((err) => res.status(400).json({ error: err }));
+  }
+});
+
+//login user
+router.route("/login").post((req, res) => {
+  const user = req.body;
+  User.findOne({ username: user.username.toLowerCase() }).then((u) => {
+    if (!u) {
+      return res.json({ message: "User not found" });
+    }
+    bcrypt.compare(user.password, u.password).then((match) => {
+      if (match) {
+        const payload = {
+          id: u._id,
+          username: u.username,
+        };
+        jwt.sign(
+          payload,
+          process.env.JWT_SECRET,
+          { expiresIn: 86400 },
+          (err, token) => {
+            if (err) {
+              return res.json({ error: err });
+            } else {
+              return res.json({
+                message: "Login Success!",
+                jwt: "Bearer " + token,
+              });
+            }
+          }
+        );
+      } else {
+        return res.json({
+          message: "Username or password is incorrect.",
+        });
+      }
+    });
   });
-
-  newUser
-    .save()
-    .then(() => res.status(200).json("User added!"))
-    .catch((err) => res.status(400).json("Error: " + err));
 });
 
 //read all
@@ -36,10 +83,9 @@ router.route("/:id").get((req, res) => {
 router.route("/:id").put((req, res) => {
   const { id } = req.params.id;
   User.findByIdAndUpdate(id, {
-    name: req.body.name,
+    username: req.body.username,
     email: req.body.email,
     password: req.body.password,
-    avatar: req.body.avatar,
   })
     .then(() => {
       res.status(200).json("User updated!");
