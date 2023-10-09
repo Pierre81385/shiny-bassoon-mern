@@ -4,7 +4,6 @@ import Spinner from "react-bootstrap/Spinner";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import { Navigate } from "react-router-dom";
-import SiteNav from "./Nav";
 
 export default function AllUsers() {
   const [resp, setResp] = useState([{}]);
@@ -41,9 +40,10 @@ export default function AllUsers() {
     </>
   ) : (
     <>
-      {resp.map(({ name, email }) => {
+      {resp.map(({ _id, name, email }) => {
         return (
           <Container>
+            <h1>{_id}</h1>
             <h2>{name}</h2>
             <h3>{email}</h3>
           </Container>

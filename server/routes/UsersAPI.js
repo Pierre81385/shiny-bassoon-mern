@@ -2,7 +2,7 @@ const router = require("express").Router();
 const User = require("../models/Users");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const mongoose = require("mongoose");
+const authenticateToken = require("../utils/jwtVerify");
 
 //create new user
 router.route("/register").post(async (req, res) => {
@@ -66,9 +66,13 @@ router.route("/login").post((req, res) => {
 });
 
 //read all
-router.route("/").get((req, res) => {
+router.route("/").get(authenticateToken, (req, res) => {
   User.find()
-    .then((users) => res.status(200).json(users))
+    .then((users) =>
+      res
+        .status(200)
+        .json(users, { isLoggedIn: true, username: req.user.username })
+    )
     .catch((err) => res.status(400).json("Error: " + err));
 });
 

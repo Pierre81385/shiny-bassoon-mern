@@ -4,7 +4,6 @@ import Container from "react-bootstrap/esm/Container";
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
-import SiteNav from "./Nav";
 
 export default function UserRegistration() {
   // State to hold user input values
@@ -41,8 +40,8 @@ export default function UserRegistration() {
         );
       })
       .then((response) => {
+        console.log(response);
         setResp(response.data);
-        localStorage.setItem("email", resp.email);
         setReq({
           name: "",
           email: "",
