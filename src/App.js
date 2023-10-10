@@ -11,7 +11,6 @@ import UserLogout from "./components/UserLogout";
 export default function App() {
   return (
     <div>
-      <SiteNav />
       <BrowserRouter>
         <Routes>
           <Route exact path="/home" element={<Home />}></Route>

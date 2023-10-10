@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import axios from "axios";
-import { Navigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 
 export default function UserLogin() {
   // State to hold user input values
@@ -12,6 +12,7 @@ export default function UserLogin() {
   });
 
   const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
 
   // Function to handle form submission
   const handleSubmit = (e) => {
@@ -30,6 +31,7 @@ export default function UserLogin() {
         }
       )
       .then((response) => {
+        localStorage.setItem("user", req.username);
         setReq({
           username: "",
           password: "",
@@ -38,6 +40,7 @@ export default function UserLogin() {
           localStorage.setItem("jwt", response.data.jwt);
           setSuccess(true);
         } else {
+          localStorage.setItem("user", null);
           console.log(response.status + " " + response.statusText);
         }
       });
@@ -84,6 +87,14 @@ export default function UserLogin() {
             required
           />
         </Form.Group>
+
+        <Button
+          onClick={() => {
+            navigate("/home");
+          }}
+        >
+          HOME
+        </Button>
 
         <Button variant="primary" type="submit">
           Login

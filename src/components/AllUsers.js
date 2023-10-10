@@ -46,6 +46,15 @@ export default function AllUsers() {
     </>
   ) : (
     <>
+      <Container>
+        <Button
+          onClick={() => {
+            navigate("/logout");
+          }}
+        >
+          LOGOUT
+        </Button>
+      </Container>
       {resp.map(({ _id, name, email }) => {
         return (
           <Container>

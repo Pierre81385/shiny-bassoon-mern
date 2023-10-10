@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/esm/Container";
 import Form from "react-bootstrap/Form";
 import axios from "axios";
-import { Navigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 
 export default function UserRegistration() {
   // State to hold user input values
@@ -15,6 +15,7 @@ export default function UserRegistration() {
 
   const [resp, setResp] = useState(null);
   const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
 
   // Function to handle form submission
   const handleSubmit = (e) => {
@@ -33,9 +34,11 @@ export default function UserRegistration() {
             <h3>{error}</h3>
             <Button
               onClick={() => {
-                <Navigate to="/home" />;
+                navigate("/home");
               }}
-            ></Button>
+            >
+              HOME
+            </Button>
           </Container>
         );
       })
@@ -104,6 +107,14 @@ export default function UserRegistration() {
             required
           />
         </Form.Group>
+
+        <Button
+          onClick={() => {
+            navigate("/home");
+          }}
+        >
+          HOME
+        </Button>
 
         <Button variant="primary" type="submit">
           Register

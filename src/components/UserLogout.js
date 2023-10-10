@@ -9,6 +9,7 @@ export default function UserLogout() {
     <Container>
       <Button
         onClick={() => {
+          localStorage.clear();
           navigate("/home");
         }}
       >
