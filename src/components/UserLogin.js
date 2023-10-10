@@ -1,19 +1,16 @@
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
-import Container from "react-bootstrap/esm/Container";
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
 
-export default function UserRegistration() {
+export default function UserLogin() {
   // State to hold user input values
   const [req, setReq] = useState({
     username: "",
-    email: "",
     password: "",
   });
 
-  const [resp, setResp] = useState(null);
   const [success, setSuccess] = useState(false);
 
   // Function to handle form submission
@@ -22,32 +19,27 @@ export default function UserRegistration() {
     // You can send the formData to your backend API for user registration here
     console.log(req);
     axios
-      .post(`http://localhost:4200/users/registration`, {
-        username: req.username,
-        email: req.email,
-        password: req.password,
-      })
-      .catch((error) => {
-        return (
-          <Container>
-            <h3>{error}</h3>
-            <Button
-              onClick={() => {
-                <Navigate to="/home" />;
-              }}
-            ></Button>
-          </Container>
-        );
-      })
+      .post(
+        `http://localhost:4200/users/login`,
+        {
+          username: req.username,
+          password: req.password,
+        },
+        {
+          responseType: "json",
+        }
+      )
       .then((response) => {
-        console.log(response);
-        setResp(response.data);
         setReq({
           username: "",
-          email: "",
           password: "",
         });
-        setSuccess(true);
+        if (response.status === 200) {
+          localStorage.setItem("jwt", response.data.jwt);
+          setSuccess(true);
+        } else {
+          console.log(response.status + " " + response.statusText);
+        }
       });
   };
 
@@ -62,32 +54,20 @@ export default function UserRegistration() {
 
   return success ? (
     <>
-      <Navigate to="/users/login" />;
+      <Navigate to="/users/all" />;
     </>
   ) : (
     <>
-      <h2>User Registration</h2>
+      <h2>User Login</h2>
 
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="name">
           <Form.Label>Username</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter your desired username."
+            placeholder="Username"
             name="username"
             value={req.username}
-            onChange={handleInputChange}
-            required
-          />
-        </Form.Group>
-
-        <Form.Group controlId="email">
-          <Form.Label>Email</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Enter your email"
-            name="email"
-            value={req.email}
             onChange={handleInputChange}
             required
           />
@@ -106,7 +86,7 @@ export default function UserRegistration() {
         </Form.Group>
 
         <Button variant="primary" type="submit">
-          Register
+          Login
         </Button>
       </Form>
     </>

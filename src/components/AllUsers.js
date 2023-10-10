@@ -3,40 +3,46 @@ import axios from "axios";
 import Spinner from "react-bootstrap/Spinner";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function AllUsers() {
   const [resp, setResp] = useState([{}]);
   const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
-      .get(`http://localhost:4200/users`)
+      .get(
+        `http://localhost:4200/users`,
+        { headers: { Authorization: localStorage.getItem("jwt") } },
+        {
+          responseType: "json",
+        }
+      )
       .then((response) => {
         setResp(response.data);
-        if (response.data) {
+        if (response.status === 200) {
           setSuccess(true);
         }
       })
       .catch((error) => {
-        return (
-          <Container>
-            <h3>{error}</h3>
-            <Button
-              onClick={() => {
-                <Navigate to="/users/registration" />;
-              }}
-            ></Button>
-          </Container>
-        );
+        setSuccess(false);
+        setResp(error);
       });
   }, []);
 
   return !success ? (
     <>
-      <Spinner animation="border" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </Spinner>
+      <Container>
+        <h3>{resp.message}</h3>
+        <Button
+          onClick={() => {
+            navigate("/users/login");
+          }}
+        >
+          back to Login
+        </Button>
+      </Container>
     </>
   ) : (
     <>

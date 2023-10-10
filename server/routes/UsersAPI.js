@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const authenticateToken = require("../utils/jwtVerify");
 
 //create new user
-router.route("/register").post(async (req, res) => {
+router.route("/registration").post(async (req, res) => {
   const user = req.body;
   const usernameTaken = await User.findOne({ username: user.username });
   const emailTaken = await User.findOne({ email: user.email });
@@ -15,8 +15,8 @@ router.route("/register").post(async (req, res) => {
   } else {
     user.password = await bcrypt.hash(req.body.password, 10);
     const newUser = new User({
-      username: user.username.toLowerCase(),
-      email: user.email.toLowerCase(),
+      username: user.username,
+      email: user.email,
       password: user.password,
     });
     newUser
@@ -31,7 +31,7 @@ router.route("/register").post(async (req, res) => {
 //login user
 router.route("/login").post((req, res) => {
   const user = req.body;
-  User.findOne({ username: user.username.toLowerCase() }).then((u) => {
+  User.findOne({ username: user.username }).then((u) => {
     if (!u) {
       return res.json({ message: "User not found" });
     }
@@ -43,7 +43,7 @@ router.route("/login").post((req, res) => {
         };
         jwt.sign(
           payload,
-          process.env.JWT_SECRET,
+          process.env.TOKEN_SECRET,
           { expiresIn: 86400 },
           (err, token) => {
             if (err) {
@@ -68,23 +68,19 @@ router.route("/login").post((req, res) => {
 //read all
 router.route("/").get(authenticateToken, (req, res) => {
   User.find()
-    .then((users) =>
-      res
-        .status(200)
-        .json(users, { isLoggedIn: true, username: req.user.username })
-    )
+    .then((users) => res.status(200).json(users))
     .catch((err) => res.status(400).json("Error: " + err));
 });
 
 //read one
-router.route("/:id").get((req, res) => {
+router.route("/:id").get(authenticateToken, (req, res) => {
   User.findById(req.params.id)
     .then((user) => res.status(200).json(user))
     .catch((err) => res.status(400).json("Error: " + err));
 });
 
 //update
-router.route("/:id").put((req, res) => {
+router.route("/:id").put(authenticateToken, (req, res) => {
   const { id } = req.params.id;
   User.findByIdAndUpdate(id, {
     username: req.body.username,
@@ -100,7 +96,7 @@ router.route("/:id").put((req, res) => {
 });
 
 //delete
-router.route("/:id").delete((req, res) => {
+router.route("/:id").delete(authenticateToken, (req, res) => {
   const { id } = req.params;
   User.findByIdAndDelete(id)
     .then(() => {

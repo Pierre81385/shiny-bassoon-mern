@@ -23,9 +23,11 @@ export default function SiteNav() {
           <NavDropdown.Item href="/users/registration">
             Register
           </NavDropdown.Item>
+          <NavDropdown.Item href="/users/login">Login</NavDropdown.Item>
           <NavDropdown.Item href="/users/all">Users</NavDropdown.Item>
           <NavDropdown.Divider />
           <NavDropdown.Item href="/home">HOME</NavDropdown.Item>
+          <NavDropdown.Item href="/logout">LOGOUT</NavDropdown.Item>
         </NavDropdown>
       </Navbar>
     </>
