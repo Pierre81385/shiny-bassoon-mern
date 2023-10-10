@@ -7,10 +7,15 @@ import UserLogin from "./components/UserLogin";
 import AllUsers from "./components/AllUsers";
 import SiteNav from "./components/Nav";
 import UserLogout from "./components/UserLogout";
+import Container from "react-bootstrap/esm/Container";
 
 export default function App() {
+  const style = {
+    container: {},
+  };
+
   return (
-    <div>
+    <Container style={style.container}>
       <BrowserRouter>
         <Routes>
           <Route exact path="/home" element={<Home />}></Route>
@@ -24,6 +29,6 @@ export default function App() {
           <Route exact path="/users/all" element={<AllUsers />}></Route>
         </Routes>
       </BrowserRouter>
-    </div>
+    </Container>
   );
 }

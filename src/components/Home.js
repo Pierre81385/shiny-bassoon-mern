@@ -7,12 +7,29 @@ import { Navigate, useNavigate } from "react-router-dom";
 
 export default function Home() {
   const navigate = useNavigate();
+  const style = {
+    container: {
+      textAlign: "center",
+    },
+    row: {},
+    colL: {
+      textAlign: "right",
+    },
+    colR: {
+      textAlign: "left",
+    },
+    button: {},
+  };
 
   return (
-    <Container>
+    <Container style={style.container}>
       <Row>
-        <Col>
+        <h1>Create a new account or sign in.</h1>
+      </Row>
+      <Row>
+        <Col style={style.colL}>
           <Button
+            variant="dark"
             onClick={() => {
               navigate("/users/registration");
             }}
@@ -20,8 +37,9 @@ export default function Home() {
             NEW USER
           </Button>
         </Col>
-        <Col>
+        <Col style={style.colR}>
           <Button
+            variant="dark"
             onClick={() => {
               navigate("/users/login");
             }}

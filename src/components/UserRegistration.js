@@ -4,8 +4,19 @@ import Container from "react-bootstrap/esm/Container";
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 import { useNavigate, Navigate } from "react-router-dom";
+import Row from "react-bootstrap/esm/Row";
 
 export default function UserRegistration() {
+  const style = {
+    form: {
+      width: "50vw",
+    },
+    button: {
+      width: "10vw",
+      margin: "10px",
+    },
+  };
+
   // State to hold user input values
   const [req, setReq] = useState({
     username: "",
@@ -71,12 +82,12 @@ export default function UserRegistration() {
     <>
       <h2>User Registration</h2>
 
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit} style={style.form}>
         <Form.Group controlId="name">
           <Form.Label>Username</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter your desired username."
+            placeholder="Enter a username."
             name="username"
             value={req.username}
             onChange={handleInputChange}
@@ -107,18 +118,21 @@ export default function UserRegistration() {
             required
           />
         </Form.Group>
+        <Row>
+          <Button
+            variant="dark"
+            onClick={() => {
+              navigate("/home");
+            }}
+            style={style.button}
+          >
+            HOME
+          </Button>
 
-        <Button
-          onClick={() => {
-            navigate("/home");
-          }}
-        >
-          HOME
-        </Button>
-
-        <Button variant="primary" type="submit">
-          Register
-        </Button>
+          <Button variant="dark" type="submit" style={style.button}>
+            REGISTER
+          </Button>
+        </Row>
       </Form>
     </>
   );

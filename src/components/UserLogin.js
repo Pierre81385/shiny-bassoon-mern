@@ -1,10 +1,20 @@
 import React, { useState } from "react";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/esm/Button";
+import Form from "react-bootstrap/esm/Form";
+import Row from "react-bootstrap/esm/Row";
 import axios from "axios";
 import { useNavigate, Navigate } from "react-router-dom";
 
 export default function UserLogin() {
+  const style = {
+    form: {
+      width: "50vw",
+    },
+    button: {
+      width: "10vw",
+      margin: "10px",
+    },
+  };
   // State to hold user input values
   const [req, setReq] = useState({
     username: "",
@@ -63,7 +73,7 @@ export default function UserLogin() {
     <>
       <h2>User Login</h2>
 
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit} style={style.form}>
         <Form.Group controlId="name">
           <Form.Label>Username</Form.Label>
           <Form.Control
@@ -87,18 +97,20 @@ export default function UserLogin() {
             required
           />
         </Form.Group>
-
-        <Button
-          onClick={() => {
-            navigate("/home");
-          }}
-        >
-          HOME
-        </Button>
-
-        <Button variant="primary" type="submit">
-          Login
-        </Button>
+        <Row>
+          <Button
+            variant="dark"
+            onClick={() => {
+              navigate("/home");
+            }}
+            style={style.button}
+          >
+            HOME
+          </Button>
+          <Button variant="dark" type="submit" style={style.button}>
+            LOGIN
+          </Button>
+        </Row>
       </Form>
     </>
   );
