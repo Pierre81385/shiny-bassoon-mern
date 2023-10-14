@@ -10,27 +10,19 @@ export default function Rooms_DM() {
   const { _id } = useParams();
   const thisUser = localStorage.getItem("_id");
   const navigate = useNavigate();
-  const [alt, setAlt] = useState(false);
-  const [resp, setResp] = useState([
-    {
-      _id: "",
-      name: "",
-      members: [],
-      messages: [
-        {
-          user: "",
-          content: "",
-          _id: "",
-        },
-      ],
-    },
-  ]);
+  const [error, setError] = useState([{}]);
   const [user1, setUser1] = useState({});
   const [user2, setUser2] = useState({});
-  const [success, setSuccess] = useState(false);
-  const [update, setUpdate] = useState(false);
+  const [update, setUpdate] = useState(0);
   const dmRoomName = _id + thisUser;
   const dmRoomNameAlt = thisUser + _id;
+  const [success, setSuccess] = useState({
+    dmRoomNameFound: false,
+    dmRoomNameAltFound: false,
+    user1Found: false,
+    user2Found: false,
+    dmRoomCreated: false,
+  });
 
   const [message, setMessage] = useState({
     content: "",
@@ -49,10 +41,22 @@ export default function Rooms_DM() {
     sender: {
       textAlign: "right",
     },
+    message: {
+      padding: "8px",
+      margin: "8px",
+      shadowColor: "black",
+      shadowOffset: {
+        width: 0,
+        height: 4,
+      },
+      shadowOpacity: 0.3,
+      shadowRadius: 6,
+    },
   };
 
-  useEffect(() => {
-    axios
+  //check for existing DM room with their userID + your userID
+  const checkDmRoomName = async () => {
+    await axios
       .get(
         `http://localhost:4200/rooms/${dmRoomName}`,
 
@@ -61,37 +65,59 @@ export default function Rooms_DM() {
         }
       )
       .then((response) => {
-        setResp(response.data);
-        setDisplay(response.data.messages);
-        if (response.status === 200) {
-          setSuccess(true);
+        console.log(response);
+        if (response.status === 200 && response.data != null) {
+          setDisplay(response.data.messages);
+          setUpdate(response.data.updatedAt);
+          setSuccess((prevState) => ({
+            ...prevState,
+            dmRoomNameFound: true,
+            dmRoomCreated: true,
+          }));
         }
       })
       .catch((error) => {
-        setResp(error);
-        axios
-          .get(
-            `http://localhost:4200/rooms/${dmRoomNameAlt}`,
-
-            {
-              responseType: "json",
-            }
-          )
-          .then((response) => {
-            setResp(response.data);
-            setDisplay(response.data.messages);
-            if (response.status === 200) {
-              setSuccess(true);
-              setAlt(true);
-            }
-          })
-          .catch((error) => {
-            setSuccess(false);
-            setResp(error);
-          });
+        setSuccess((prevState) => ({
+          ...prevState,
+          dmRoomNameFound: false,
+        }));
+        setError({ message: error });
       });
+  };
 
-    axios
+  //check for existing DM room with your userID + their userID
+  const checkDmRoomNameAlt = async () => {
+    await axios
+      .get(
+        `http://localhost:4200/rooms/${dmRoomNameAlt}`,
+
+        {
+          responseType: "json",
+        }
+      )
+      .then((response) => {
+        if (response.status === 200 && response.data != null) {
+          setDisplay(response.data.messages);
+          setUpdate(response.data.updatedAt);
+          setSuccess((prevState) => ({
+            ...prevState,
+            dmRoomNameAltFound: true,
+            dmRoomCreated: true,
+          }));
+        }
+      })
+      .catch((error) => {
+        setSuccess((prevState) => ({
+          ...prevState,
+          dmRoomNameAltFound: false,
+        }));
+        setError({ message: error });
+      });
+  };
+
+  //get their user object by ID
+  const getTheirUserObject = async () => {
+    await axios
       .get(
         `http://localhost:4200/users/${_id}`,
         { headers: { Authorization: localStorage.getItem("jwt") } },
@@ -100,17 +126,26 @@ export default function Rooms_DM() {
         }
       )
       .then((response) => {
-        setUser1(response.data);
         if (response.status === 200) {
-          setSuccess(true);
+          setSuccess((prevState) => ({
+            ...prevState,
+            user1Found: true,
+          }));
+          setUser1(response.data);
         }
       })
       .catch((error) => {
-        setSuccess(false);
-        setUser1(error);
+        setSuccess((prevState) => ({
+          ...prevState,
+          user1Found: false,
+        }));
+        setError({ message: error });
       });
+  };
 
-    axios
+  //get your user object
+  const getYourUserObject = async () => {
+    await axios
       .get(
         `http://localhost:4200/users/${thisUser}`,
         { headers: { Authorization: localStorage.getItem("jwt") } },
@@ -119,22 +154,30 @@ export default function Rooms_DM() {
         }
       )
       .then((response) => {
-        setUser2(response.data);
         if (response.status === 200) {
-          setSuccess(true);
+          setSuccess((prevState) => ({
+            ...prevState,
+            user2Found: true,
+          }));
+          setUser2(response.data);
         }
       })
       .catch((error) => {
-        setSuccess(false);
-        setUser2(error);
+        setSuccess((prevState) => ({
+          ...prevState,
+          user2Found: false,
+        }));
+        setError({ message: error });
       });
+  };
 
-    //create room with id _id+thisUser
-    axios
+  //create room
+  const createRoom = async () => {
+    await axios
       .post(
         `http://localhost:4200/rooms/add`,
         {
-          name: alt ? thisUser + _id : _id + thisUser,
+          name: success.dmRoomNameAltFound ? thisUser + _id : _id + thisUser,
           members: [_id, thisUser],
         },
 
@@ -144,16 +187,26 @@ export default function Rooms_DM() {
       )
       .then((response) => {
         if (response.status === 200) {
-          setSuccess(true);
-          console.log("DM chat room created");
+          setSuccess((prevState) => ({
+            ...prevState,
+            dmRoomCreated: true,
+          }));
         }
       })
       .catch((error) => {
-        setSuccess(false);
-        console.log(error);
+        setSuccess((prevState) => ({
+          ...prevState,
+          dmRoomCreated: false,
+        }));
+        setError({ message: error });
       });
+  };
 
-    setUpdate(false);
+  useEffect(() => {
+    getTheirUserObject();
+    getYourUserObject();
+    checkDmRoomName();
+    checkDmRoomNameAlt();
   }, [update]);
 
   const handleSubmit = (e) => {
@@ -161,7 +214,7 @@ export default function Rooms_DM() {
 
     axios
       .put(
-        alt
+        success.dmRoomNameAltFound
           ? `http://localhost:4200/rooms/${dmRoomNameAlt}/message/${thisUser}`
           : `http://localhost:4200/rooms/${dmRoomName}/message/${thisUser}`,
         {
@@ -169,27 +222,20 @@ export default function Rooms_DM() {
         }
       )
       .catch((error) => {
-        return (
-          <Container>
-            <h3>{error}</h3>
-          </Container>
-        );
+        setError({ message: error });
       })
       .then((response) => {
-        console.log(response);
         setMessage({
           content: "",
         });
-        setSuccess(true);
-        setUpdate(true);
+        setUpdate(Date.now());
       });
   };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { value } = e.target;
     setMessage({
-      ...message,
-      [name]: value,
+      content: value,
     });
   };
 
@@ -199,47 +245,69 @@ export default function Rooms_DM() {
 
       <h4 style={{ textAlign: "center" }}>Between you and {user1.username}</h4>
 
-      <Card>
-        {display.map(({ user, content }) => {
-          return user === thisUser ? (
-            <Container>
-              <h4 style={style.sender}>
-                {content} :{user2.username}
-              </h4>
-            </Container>
+      {success.dmRoomCreated ? (
+        <>
+          <Card style={style.message}>
+            {display.map(({ user, content, timestamp }) => {
+              return user === thisUser ? (
+                <Card style={style.message}>
+                  <h4 style={style.sender}>
+                    {content} :{user2.username}
+                  </h4>
+                </Card>
+              ) : (
+                <Card style={style.message}>
+                  <h4>
+                    {user1.username}: {content}
+                  </h4>
+                </Card>
+              );
+            })}
+          </Card>
+          {update === 0 ? (
+            <></>
           ) : (
-            <Container>
-              <h4>
-                {user1.username}: {content}
-              </h4>
-            </Container>
-          );
-        })}
-      </Card>
-      <Form onSubmit={handleSubmit} style={style.form}>
-        <Form.Group controlId="name">
-          <Form.Label>Message</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder=""
-            name="content"
-            value={message.content}
-            onChange={handleInputChange}
-            required
-          />
-        </Form.Group>
-        <Button
-          variant="dark"
-          onClick={() => {
-            navigate("/users/all");
-          }}
-        >
-          BACK
-        </Button>
-        <Button variant="dark" type="submit" style={style.button}>
-          SEND
-        </Button>
-      </Form>
+            <h5>Last update: {Date(update).toString()}</h5>
+          )}
+
+          <Form onSubmit={handleSubmit} style={style.form}>
+            <Form.Group controlId="name">
+              <Form.Label>Message</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder=""
+                name="content"
+                value={message.content}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+            <Button
+              variant="dark"
+              onClick={() => {
+                navigate("/users/all");
+              }}
+            >
+              BACK
+            </Button>
+            <Button variant="dark" type="submit" style={style.button}>
+              SEND
+            </Button>
+          </Form>
+        </>
+      ) : (
+        <>
+          <Button
+            variant="dark"
+            style={style.button}
+            onClick={() => {
+              createRoom();
+            }}
+          >
+            START A DIRECT MESSAGE
+          </Button>
+        </>
+      )}
     </Container>
   );
 }

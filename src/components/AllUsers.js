@@ -48,15 +48,21 @@ export default function AllUsers() {
     </>
   ) : (
     <>
-      <Container>
-        <Button
-          onClick={() => {
-            navigate("/logout");
-          }}
-        >
-          LOGOUT
-        </Button>
-      </Container>
+      <Row>
+        <Col>
+          <Button
+            onClick={() => {
+              localStorage.clear();
+              navigate("/home");
+            }}
+          >
+            LOGOUT
+          </Button>
+        </Col>
+        <Col>
+          <Button>NEW CHAT ROOM</Button>
+        </Col>
+      </Row>
       {resp.map(({ _id, username, email }) => {
         return (
           <Container>
@@ -67,6 +73,7 @@ export default function AllUsers() {
               {username === localStorage.getItem("username") ? (
                 <Col>
                   <Button
+                    variant="dark"
                     onClick={() => {
                       navigate("/users/edit");
                     }}
@@ -77,6 +84,7 @@ export default function AllUsers() {
               ) : (
                 <Col>
                   <Button
+                    variant="dark"
                     onClick={() => {
                       navigate(`/users/dm/${_id}`);
                     }}
