@@ -25,8 +25,8 @@ router.route("/").get((req, res) => {
 });
 
 //read one
-router.route("/:id").get((req, res) => {
-  Room.findById(req.params.id)
+router.route("/:name").get((req, res) => {
+  Room.findOne({ name: req.params.name })
     .then((room) => res.status(200).json(room))
     .catch((err) => res.status(400).json("Error: " + err));
 });
@@ -90,11 +90,11 @@ router.route("/:id/leave/:userid").put((req, res) => {
 });
 
 //message
-router.route("/:id/message/:userid").put((req, res) => {
-  const id = new mongoose.Types.ObjectId(req.params.id);
+router.route("/:name/message/:userid").put((req, res) => {
+  const name = req.params.name;
   const uid = req.params.userid;
   Room.findOneAndUpdate(
-    { _id: id },
+    { name: name },
     {
       $addToSet: {
         messages: {

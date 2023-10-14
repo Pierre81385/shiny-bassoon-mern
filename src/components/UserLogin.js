@@ -41,13 +41,14 @@ export default function UserLogin() {
         }
       )
       .then((response) => {
-        localStorage.setItem("user", req.username);
+        localStorage.setItem("username", req.username);
         setReq({
           username: "",
           password: "",
         });
         if (response.status === 200) {
           localStorage.setItem("jwt", response.data.jwt);
+          localStorage.setItem("_id", response.data._id);
           setSuccess(true);
         } else {
           localStorage.setItem("user", null);

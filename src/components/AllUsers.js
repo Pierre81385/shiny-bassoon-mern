@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Spinner from "react-bootstrap/Spinner";
-import Container from "react-bootstrap/Container";
-import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/esm/Container";
+import Button from "react-bootstrap/esm/Button";
+import Row from "react-bootstrap/esm/Row";
+import Col from "react-bootstrap/esm/Col";
+
 import { useNavigate } from "react-router-dom";
 
 export default function AllUsers() {
@@ -55,12 +57,35 @@ export default function AllUsers() {
           LOGOUT
         </Button>
       </Container>
-      {resp.map(({ _id, name, email }) => {
+      {resp.map(({ _id, username, email }) => {
         return (
           <Container>
-            <h1>{_id}</h1>
-            <h2>{name}</h2>
-            <h3>{email}</h3>
+            <Row>
+              <Col>
+                <h2>{username}</h2>
+              </Col>
+              {username === localStorage.getItem("username") ? (
+                <Col>
+                  <Button
+                    onClick={() => {
+                      navigate("/users/edit");
+                    }}
+                  >
+                    Edit
+                  </Button>
+                </Col>
+              ) : (
+                <Col>
+                  <Button
+                    onClick={() => {
+                      navigate(`/users/dm/${_id}`);
+                    }}
+                  >
+                    Chat
+                  </Button>
+                </Col>
+              )}
+            </Row>
           </Container>
         );
       })}

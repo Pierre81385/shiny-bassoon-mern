@@ -51,6 +51,7 @@ router.route("/login").post((req, res) => {
             } else {
               return res.json({
                 message: "Login Success!",
+                _id: u._id,
                 jwt: "Bearer " + token,
               });
             }
