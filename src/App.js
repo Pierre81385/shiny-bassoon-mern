@@ -5,9 +5,9 @@ import Home from "./components/Home";
 import UserRegistration from "./components/UserRegistration";
 import UserLogin from "./components/UserLogin";
 import AllUsers from "./components/AllUsers";
-import UserLogout from "./components/UserLogout";
 import Container from "react-bootstrap/esm/Container";
 import Rooms_DM from "./components/Rooms_DM";
+import Rooms_Public from "./components/Rooms_Public";
 
 export default function App() {
   const style = {
@@ -26,7 +26,7 @@ export default function App() {
           ></Route>
           <Route exact path="/users/login" element={<UserLogin />}></Route>
           <Route exact path="/users/dm/:_id" element={<Rooms_DM />}></Route>
-          <Route exact path="/logout" element={<UserLogout />}></Route>
+          <Route exact path="/rooms/public" element={<Rooms_Public />}></Route>
           <Route exact path="/users/all" element={<AllUsers />}></Route>
         </Routes>
       </BrowserRouter>

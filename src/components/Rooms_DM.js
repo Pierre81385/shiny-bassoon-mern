@@ -178,6 +178,7 @@ export default function Rooms_DM() {
         `http://localhost:4200/rooms/add`,
         {
           name: success.dmRoomNameAltFound ? thisUser + _id : _id + thisUser,
+          isPrivate: true,
           members: [_id, thisUser],
         },
 
@@ -207,6 +208,16 @@ export default function Rooms_DM() {
     getYourUserObject();
     checkDmRoomName();
     checkDmRoomNameAlt();
+    console.log({
+      FoundUser1: success.user1Found,
+      FoundUser2: success.user2Found,
+      RoomName1InUse: success.dmRoomNameFound,
+      RoomName2InUse: success.dmRoomNameAltFound,
+      RoomCreatedSuccessfully: success.dmRoomCreated,
+    });
+    console.log({
+      errors: error.message,
+    });
   }, [update]);
 
   const handleSubmit = (e) => {

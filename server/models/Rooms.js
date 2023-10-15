@@ -12,7 +12,10 @@ const roomSchema = new Schema(
     members: {
       type: Array,
       required: true,
-      unique: true,
+    },
+    isPrivate: {
+      type: Boolean,
+      required: true,
     },
     messages: [
       {

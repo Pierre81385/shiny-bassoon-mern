@@ -60,7 +60,13 @@ export default function AllUsers() {
           </Button>
         </Col>
         <Col>
-          <Button>NEW CHAT ROOM</Button>
+          <Button
+            onClick={() => {
+              navigate("/rooms/public");
+            }}
+          >
+            NEW CHAT ROOM
+          </Button>
         </Col>
       </Row>
       {resp.map(({ _id, username, email }) => {

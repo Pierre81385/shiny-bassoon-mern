@@ -5,9 +5,11 @@ const mongoose = require("mongoose");
 router.route("/add").post((req, res) => {
   const name = req.body.name;
   const members = req.body.members;
+  const isPrivate = req.body.isPrivate;
 
   const newRoom = new Room({
     name,
+    isPrivate,
     members,
   });
 
@@ -38,6 +40,7 @@ router.route("/:name").put((req, res) => {
     { name: req.params.name },
     {
       name: req.body.name,
+      isPrivate: req.body.isPrivate,
     }
   )
     .then(() => {
