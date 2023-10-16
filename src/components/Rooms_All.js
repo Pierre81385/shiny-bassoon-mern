@@ -4,31 +4,26 @@ import Form from "react-bootstrap/esm/Form";
 import Button from "react-bootstrap/esm/Button";
 import axios from "axios";
 import Container from "react-bootstrap/esm/Container";
+import Card from "react-bootstrap/esm/Card";
 
-export default function Rooms_Public() {
+export default function Rooms_All() {
   const [room, setRoom] = useState({
     name: "",
     isPrivate: false,
+    createdBy: localStorage.getItem("_id"),
     members: [localStorage.getItem("_id")],
   });
-  const [resp, setResp] = useState([{}]);
+  const [resp, setResp] = useState([
+    { name: "", isPrivate: false, members: [""] },
+  ]);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState({
     roomCreated: false,
     foundRooms: false,
   });
   const [isEnabled, setIsEnabled] = useState(false);
-  const navigate = useNavigate();
 
-  const style = {
-    form: {
-      width: "50vw",
-    },
-    button: {
-      width: "10vw",
-      margin: "10px",
-    },
-  };
+  const navigate = useNavigate();
 
   const createRoom = async () => {
     await axios
@@ -37,6 +32,7 @@ export default function Rooms_Public() {
         {
           name: room.name,
           isPrivate: isEnabled,
+          createdBy: room.createdBy,
           members: room.members,
         },
 
@@ -81,14 +77,13 @@ export default function Rooms_Public() {
         }
       })
       .catch((error) => {
-        setSuccess(false);
+        setSuccess((prevState) => ({
+          ...prevState,
+          foundRooms: false,
+        }));
         setResp(error);
       });
   };
-
-  useEffect(() => {
-    getRooms();
-  }, [success]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -96,6 +91,7 @@ export default function Rooms_Public() {
     setRoom({
       name: "",
       isPrivate: false,
+      createdBy: localStorage.getItem("_id"),
       members: [localStorage.getItem("_id")],
     });
   };
@@ -111,14 +107,44 @@ export default function Rooms_Public() {
 
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
-  return (
+  useEffect(() => {
+    getRooms();
+  }, [success.roomCreated]);
+
+  const style = {
+    form: {
+      width: "50vw",
+    },
+    button: {
+      width: "10vw",
+      margin: "10px",
+    },
+    card: {
+      margin: "8px",
+      padding: "8px",
+    },
+  };
+
+  return !success.foundRooms ? (
+    <>
+      <Container>
+        <h3>{resp.message}</h3>
+        <Button
+          onClick={() => {
+            navigate("/users/login");
+          }}
+        >
+          back to Login
+        </Button>
+      </Container>
+    </>
+  ) : (
     <>
       <Form onSubmit={handleSubmit} style={style.form}>
         <Form.Group controlId="name">
-          <Form.Label>Room Name</Form.Label>
           <Form.Control
             type="text"
-            placeholder=""
+            placeholder="Room Name..."
             name="name"
             value={room.name}
             onChange={handleInputChange}
@@ -126,7 +152,6 @@ export default function Rooms_Public() {
           />
         </Form.Group>
         <Form.Group controlId="isPrivate">
-          <Form.Label>Make Private</Form.Label>
           <Form.Switch
             type="switch"
             label="Make Private"
@@ -136,26 +161,47 @@ export default function Rooms_Public() {
             onChange={toggleSwitch}
           />
         </Form.Group>
-        <Button
-          variant="dark"
-          style={style.button}
-          onClick={() => {
-            navigate("/users/all");
-          }}
-        >
-          BACK
-        </Button>
+
         <Button variant="dark" type="submit" style={style.button}>
           Create
         </Button>
       </Form>
-      {resp.map(({ name, isPrivate, members }) => {
+      {resp.map(({ name, isPrivate, members, updatedAt }) => {
         return (
-          <Container>
-            <h2>{name}</h2>
-            <h3>Members: {members.length}</h3>
-            {isPrivate ? <h5>PRIVATE</h5> : <></>}
-          </Container>
+          <Card style={style.card}>
+            <Container>
+              <h2>{name}</h2>
+              <h4>Members: {members.length}</h4>
+              <h4>Last active {updatedAt}</h4>
+            </Container>
+            <Container>
+              {!isPrivate ? (
+                <Button
+                  variant="dark"
+                  style={style.button}
+                  onClick={() => {
+                    navigate(`/rooms/${name}`);
+                  }}
+                >
+                  Enter
+                </Button>
+              ) : isPrivate && members.includes(localStorage.getItem("_id")) ? (
+                <Button
+                  variant="dark"
+                  style={style.button}
+                  onClick={() => {
+                    navigate(`/rooms/${name}`);
+                  }}
+                >
+                  Enter
+                </Button>
+              ) : (
+                <Button variant="dark" style={style.button}>
+                  Join
+                </Button>
+              )}
+            </Container>
+          </Card>
         );
       })}
     </>

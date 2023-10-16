@@ -4,11 +4,13 @@ const mongoose = require("mongoose");
 
 router.route("/add").post((req, res) => {
   const name = req.body.name;
+  const createdBy = req.body.createdBy;
   const members = req.body.members;
   const isPrivate = req.body.isPrivate;
 
   const newRoom = new Room({
     name,
+    createdBy,
     isPrivate,
     members,
   });
@@ -35,7 +37,6 @@ router.route("/:name").get((req, res) => {
 
 //update
 router.route("/:name").put((req, res) => {
-  const { id } = req.params.id;
   Room.findOneAndUpdate(
     { name: req.params.name },
     {
@@ -99,6 +100,7 @@ router.route("/:name/message/:userid").put((req, res) => {
       $addToSet: {
         messages: {
           user: req.params.userid,
+          username: req.body.username,
           content: req.body.content,
         },
       },

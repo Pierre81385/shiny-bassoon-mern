@@ -68,7 +68,7 @@ export default function UserLogin() {
 
   return success ? (
     <>
-      <Navigate to="/users/all" />;
+      <Navigate to="/main" />;
     </>
   ) : (
     <>
@@ -102,7 +102,7 @@ export default function UserLogin() {
           <Button
             variant="dark"
             onClick={() => {
-              navigate("/home");
+              navigate("/");
             }}
             style={style.button}
           >

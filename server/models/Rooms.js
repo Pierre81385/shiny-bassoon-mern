@@ -17,9 +17,14 @@ const roomSchema = new Schema(
       type: Boolean,
       required: true,
     },
+    createdBy: {
+      type: String,
+      required: true,
+    },
     messages: [
       {
         user: String,
+        username: String,
         content: String,
       },
     ],

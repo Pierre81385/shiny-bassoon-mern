@@ -23,36 +23,10 @@ export default function Rooms_DM() {
     user2Found: false,
     dmRoomCreated: false,
   });
-
   const [message, setMessage] = useState({
     content: "",
   });
-
   const [display, setDisplay] = useState([]);
-
-  const style = {
-    form: {
-      width: "50vw",
-    },
-    button: {
-      width: "10vw",
-      margin: "10px",
-    },
-    sender: {
-      textAlign: "right",
-    },
-    message: {
-      padding: "8px",
-      margin: "8px",
-      shadowColor: "black",
-      shadowOffset: {
-        width: 0,
-        height: 4,
-      },
-      shadowOpacity: 0.3,
-      shadowRadius: 6,
-    },
-  };
 
   //check for existing DM room with their userID + your userID
   const checkDmRoomName = async () => {
@@ -81,7 +55,7 @@ export default function Rooms_DM() {
           ...prevState,
           dmRoomNameFound: false,
         }));
-        setError({ message: error });
+        setError(error);
       });
   };
 
@@ -111,7 +85,7 @@ export default function Rooms_DM() {
           ...prevState,
           dmRoomNameAltFound: false,
         }));
-        setError({ message: error });
+        setError(error);
       });
   };
 
@@ -139,7 +113,7 @@ export default function Rooms_DM() {
           ...prevState,
           user1Found: false,
         }));
-        setError({ message: error });
+        setError(error);
       });
   };
 
@@ -167,7 +141,7 @@ export default function Rooms_DM() {
           ...prevState,
           user2Found: false,
         }));
-        setError({ message: error });
+        setError(error);
       });
   };
 
@@ -179,6 +153,7 @@ export default function Rooms_DM() {
         {
           name: success.dmRoomNameAltFound ? thisUser + _id : _id + thisUser,
           isPrivate: true,
+          createdBy: thisUser,
           members: [_id, thisUser],
         },
 
@@ -199,8 +174,39 @@ export default function Rooms_DM() {
           ...prevState,
           dmRoomCreated: false,
         }));
-        setError({ message: error });
+        setError(error);
       });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    axios
+      .put(
+        success.dmRoomNameAltFound
+          ? `http://localhost:4200/rooms/${dmRoomNameAlt}/message/${thisUser}`
+          : `http://localhost:4200/rooms/${dmRoomName}/message/${thisUser}`,
+        {
+          username: user2.username,
+          content: message.content,
+        }
+      )
+      .then((response) => {
+        setMessage({
+          content: "",
+        });
+        setUpdate(Date.now());
+      })
+      .catch((error) => {
+        setError(error);
+      });
+  };
+
+  const handleInputChange = (e) => {
+    const { value } = e.target;
+    setMessage({
+      content: value,
+    });
   };
 
   useEffect(() => {
@@ -220,34 +226,28 @@ export default function Rooms_DM() {
     });
   }, [update]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    axios
-      .put(
-        success.dmRoomNameAltFound
-          ? `http://localhost:4200/rooms/${dmRoomNameAlt}/message/${thisUser}`
-          : `http://localhost:4200/rooms/${dmRoomName}/message/${thisUser}`,
-        {
-          content: message.content,
-        }
-      )
-      .catch((error) => {
-        setError({ message: error });
-      })
-      .then((response) => {
-        setMessage({
-          content: "",
-        });
-        setUpdate(Date.now());
-      });
-  };
-
-  const handleInputChange = (e) => {
-    const { value } = e.target;
-    setMessage({
-      content: value,
-    });
+  const style = {
+    form: {
+      width: "50vw",
+    },
+    button: {
+      width: "10vw",
+      margin: "10px",
+    },
+    sender: {
+      textAlign: "right",
+    },
+    message: {
+      padding: "8px",
+      margin: "8px",
+      shadowColor: "black",
+      shadowOffset: {
+        width: 0,
+        height: 4,
+      },
+      shadowOpacity: 0.3,
+      shadowRadius: 6,
+    },
   };
 
   return (
@@ -296,7 +296,7 @@ export default function Rooms_DM() {
             <Button
               variant="dark"
               onClick={() => {
-                navigate("/users/all");
+                navigate("/main");
               }}
             >
               BACK
