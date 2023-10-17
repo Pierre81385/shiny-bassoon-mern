@@ -20,6 +20,7 @@ export default function Rooms_All() {
   const [success, setSuccess] = useState({
     roomCreated: false,
     foundRooms: false,
+    roomDeleted: false,
   });
   const [isEnabled, setIsEnabled] = useState(false);
 
@@ -42,17 +43,17 @@ export default function Rooms_All() {
       )
       .then((response) => {
         if (response.status === 200 && response.data != null) {
-          setSuccess((prevState) => ({
-            ...prevState,
+          setSuccess({
+            ...success,
             roomCreated: true,
-          }));
+          });
         }
       })
       .catch((error) => {
-        setSuccess((prevState) => ({
-          ...prevState,
+        setSuccess({
+          ...success,
           roomCreated: false,
-        }));
+        });
         setError(error);
         console.log(error);
       });
@@ -70,18 +71,40 @@ export default function Rooms_All() {
       .then((response) => {
         setResp(response.data);
         if (response.status === 200 && response.data != null) {
-          setSuccess((prevState) => ({
-            ...prevState,
+          setSuccess({
+            ...success,
             foundRooms: true,
-          }));
+          });
         }
       })
       .catch((error) => {
-        setSuccess((prevState) => ({
-          ...prevState,
+        setSuccess({
+          ...success,
           foundRooms: false,
-        }));
+        });
         setResp(error);
+      });
+  };
+
+  const deleteRoom = async (name) => {
+    await axios
+      .delete(`http://localhost:4200/rooms/${name}}`, {
+        responseType: "json",
+      })
+      .then((response) => {
+        if (response.status === 200 && response.data != null) {
+          setSuccess({
+            ...success,
+            roomDeleted: true,
+          });
+        }
+      })
+      .catch((error) => {
+        setSuccess({
+          ...success,
+          roomDeleted: false,
+        });
+        setError(error);
       });
   };
 
@@ -166,16 +189,14 @@ export default function Rooms_All() {
           Create
         </Button>
       </Form>
-      {resp.map(({ name, isPrivate, members, updatedAt }) => {
+      {resp.map(({ _id, name, isPrivate, members, updatedAt, createdBy }) => {
         return (
           <Card style={style.card}>
-            <Container>
-              <h2>{name}</h2>
-              <h4>Members: {members.length}</h4>
-              <h4>Last active {updatedAt}</h4>
-            </Container>
-            <Container>
-              {!isPrivate ? (
+            {!isPrivate ? (
+              <Container>
+                <h2>{name}</h2>
+                <h4>Members: {members.length}</h4>
+                <h4>Last active {updatedAt}</h4>
                 <Button
                   variant="dark"
                   style={style.button}
@@ -185,7 +206,25 @@ export default function Rooms_All() {
                 >
                   Enter
                 </Button>
-              ) : isPrivate && members.includes(localStorage.getItem("_id")) ? (
+                {createdBy === localStorage.getItem("_id") ? (
+                  <Button
+                    variant="dark"
+                    style={style.button}
+                    onClick={() => {
+                      deleteRoom(name);
+                    }}
+                  >
+                    DELETE
+                  </Button>
+                ) : (
+                  <></>
+                )}
+              </Container>
+            ) : isPrivate && members.includes(localStorage.getItem("_id")) ? (
+              <Container>
+                <h2>{name}</h2>
+                <h4>Members: {members.length}</h4>
+                <h4>Last active {updatedAt}</h4>
                 <Button
                   variant="dark"
                   style={style.button}
@@ -195,12 +234,23 @@ export default function Rooms_All() {
                 >
                   Enter
                 </Button>
-              ) : (
-                <Button variant="dark" style={style.button}>
-                  Join
-                </Button>
-              )}
-            </Container>
+                {createdBy === localStorage.getItem("_id") ? (
+                  <Button
+                    variant="dark"
+                    style={style.button}
+                    onClick={() => {
+                      deleteRoom(name);
+                    }}
+                  >
+                    DELETE
+                  </Button>
+                ) : (
+                  <></>
+                )}
+              </Container>
+            ) : (
+              <></>
+            )}
           </Card>
         );
       })}

@@ -13,9 +13,40 @@ export default function Rooms_Chat() {
     content: "",
   });
   const [display, setDisplay] = useState([]);
+  const [members, setMemebers] = useState([]);
   const thisUser = localStorage.getItem("_id");
   const sender = localStorage.getItem("username");
   const navigate = useNavigate();
+
+  const leaveRoom = async () => {
+    await axios
+      .put(`http://localhost:4200/rooms/${_roomName}/leave/${thisUser}`, {
+        responseType: "json",
+      })
+      .then((response) => {
+        if (response.status === 200 && response.data != null) {
+          setUpdate(Date.now());
+        }
+      })
+      .catch((error) => {
+        setError(error);
+      });
+  };
+
+  const joinRoom = async () => {
+    await axios
+      .put(`http://localhost:4200/rooms/${_roomName}/join/${thisUser}`, {
+        responseType: "json",
+      })
+      .then((response) => {
+        if (response.status === 200 && response.data != null) {
+          setUpdate(Date.now());
+        }
+      })
+      .catch((error) => {
+        setError(error);
+      });
+  };
 
   const getRoomMessages = async () => {
     await axios
@@ -30,6 +61,7 @@ export default function Rooms_Chat() {
         console.log(response);
         if (response.status === 200 && response.data != null) {
           setDisplay(response.data.messages);
+          setMemebers(response.data.members);
           setUpdate(response.data.updatedAt);
         }
       })
@@ -95,6 +127,15 @@ export default function Rooms_Chat() {
   return (
     <>
       <Card style={style.message}>
+        <Button
+          variant="dark"
+          style={style.button}
+          onClick={() => {
+            leaveRoom();
+          }}
+        >
+          LEAVE
+        </Button>
         {display.map(({ user, username, content }) => {
           return user === thisUser ? (
             <Card style={style.message}>
@@ -111,31 +152,54 @@ export default function Rooms_Chat() {
           );
         })}
       </Card>
+      <h5>{members.length} Members</h5>
       {update === 0 ? <></> : <h5>Last update: {Date(update).toString()}</h5>}
-      <Form onSubmit={handleSubmit} style={style.form}>
-        <Form.Group controlId="name">
-          <Form.Label>Message</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder=""
-            name="content"
-            value={message.content}
-            onChange={handleInputChange}
-            required
-          />
-        </Form.Group>
-        <Button
-          variant="dark"
-          onClick={() => {
-            navigate("/main");
-          }}
-        >
-          BACK
-        </Button>
-        <Button variant="dark" type="submit" style={style.button}>
-          SEND
-        </Button>
-      </Form>
+      {members.includes(localStorage.getItem("_id")) ? (
+        <Form onSubmit={handleSubmit} style={style.form}>
+          <Form.Group controlId="name">
+            <Form.Label>Message</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder=""
+              name="content"
+              value={message.content}
+              onChange={handleInputChange}
+              required
+            />
+          </Form.Group>
+          <Button
+            variant="dark"
+            onClick={() => {
+              navigate("/main");
+            }}
+          >
+            BACK
+          </Button>
+          <Button variant="dark" type="submit" style={style.button}>
+            SEND
+          </Button>
+        </Form>
+      ) : (
+        <>
+          <Button
+            variant="dark"
+            onClick={() => {
+              navigate("/main");
+            }}
+          >
+            BACK
+          </Button>
+          <Button
+            variant="dark"
+            style={style.button}
+            onClick={() => {
+              joinRoom();
+            }}
+          >
+            JOIN
+          </Button>
+        </>
+      )}
       ;
     </>
   );

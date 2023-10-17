@@ -60,35 +60,38 @@ export default function Users_All() {
   ) : (
     <Card style={style.card}>
       {resp.map(({ _id, username, email }) => {
-        return (
-          <Row>
+        return username === localStorage.getItem("username") ? (
+          <Card style={style.card}>
             <Col>
               <h2>{username}</h2>
             </Col>
-            {username === localStorage.getItem("username") ? (
-              <Col>
-                <Button
-                  variant="dark"
-                  onClick={() => {
-                    navigate("/users/edit");
-                  }}
-                >
-                  Edit
-                </Button>
-              </Col>
-            ) : (
-              <Col>
-                <Button
-                  variant="dark"
-                  onClick={() => {
-                    navigate(`/users/dm/${_id}`);
-                  }}
-                >
-                  DM
-                </Button>
-              </Col>
-            )}
-          </Row>
+            <Col>
+              <Button
+                variant="dark"
+                onClick={() => {
+                  navigate("/users/edit");
+                }}
+              >
+                Edit
+              </Button>
+            </Col>
+          </Card>
+        ) : (
+          <>
+            <Col>
+              <h2>{username}</h2>
+            </Col>
+            <Col>
+              <Button
+                variant="dark"
+                onClick={() => {
+                  navigate(`/users/dm/${_id}`);
+                }}
+              >
+                DM
+              </Button>
+            </Col>
+          </>
         );
       })}
     </Card>

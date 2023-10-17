@@ -118,11 +118,11 @@ router.route("/:name/message/:userid").put((req, res) => {
 });
 
 //delete
-router.route("/:id").delete((req, res) => {
-  const { id } = req.params;
-  User.findByIdAndDelete(id)
+router.route("/:name").delete((req, res) => {
+  const { name } = req.params.name;
+  Room.findOneAndDelete(name)
     .then(() => {
-      res.status(200).json("User deleted!");
+      res.status(200).json("Room deleted!");
     })
     .catch((err) => {
       res.status(400).json("Error: " + err);
