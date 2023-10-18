@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/esm/Container";
 import Form from "react-bootstrap/Form";
@@ -7,62 +7,49 @@ import { useNavigate, Navigate } from "react-router-dom";
 import Row from "react-bootstrap/esm/Row";
 
 export default function UserRegistration() {
-  const style = {
-    form: {
-      width: "50vw",
-    },
-    button: {
-      width: "10vw",
-      margin: "10px",
-    },
-  };
-
-  // State to hold user input values
   const [req, setReq] = useState({
     username: "",
     email: "",
     password: "",
   });
-
-  const [resp, setResp] = useState(null);
-  const [success, setSuccess] = useState(false);
+  const [resp, setResp] = useState([{}]);
+  const [success, setSuccess] = useState(true);
+  const [error, setError] = useState({
+    status: 0,
+    message: "",
+  });
   const navigate = useNavigate();
 
-  // Function to handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // You can send the formData to your backend API for user registration here
-    console.log(req);
-    axios
+  const registerUser = async () => {
+    await axios
       .post(`http://localhost:4200/users/registration`, {
         username: req.username,
         email: req.email,
         password: req.password,
       })
-      .catch((error) => {
-        return (
-          <Container>
-            <h3>{error}</h3>
-            <Button
-              onClick={() => {
-                navigate("/home");
-              }}
-            >
-              HOME
-            </Button>
-          </Container>
-        );
-      })
       .then((response) => {
-        console.log(response);
-        setResp(response.data);
         setReq({
           username: "",
           email: "",
           password: "",
         });
+        setResp(response.data);
         setSuccess(true);
+        navigate("/users/login");
+      })
+      .catch((error) => {
+        console.log("caught!!!");
+        setError({
+          status: error.response.status,
+          message: error.response.data.message,
+        });
+        setSuccess(false);
       });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    registerUser();
   };
 
   // Function to handle input changes
@@ -74,9 +61,29 @@ export default function UserRegistration() {
     });
   };
 
-  return success ? (
+  const style = {
+    form: {
+      width: "50vw",
+    },
+    button: {
+      width: "10vw",
+      margin: "10px",
+    },
+  };
+
+  return !success ? (
     <>
-      <Navigate to="/users/login" />;
+      <h1>ERROR {error.status}</h1>
+      <h4>{error.message}</h4>
+      <Button
+        variant="dark"
+        onClick={() => {
+          setSuccess(true);
+        }}
+        style={style.button}
+      >
+        BACK
+      </Button>
     </>
   ) : (
     <>
@@ -122,7 +129,7 @@ export default function UserRegistration() {
           <Button
             variant="dark"
             onClick={() => {
-              navigate("/home");
+              navigate("/");
             }}
             style={style.button}
           >

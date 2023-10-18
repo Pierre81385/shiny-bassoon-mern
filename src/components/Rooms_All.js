@@ -132,7 +132,7 @@ export default function Rooms_All() {
 
   useEffect(() => {
     getRooms();
-  }, [success.roomCreated]);
+  }, [success.roomCreated, success.roomDeleted]);
 
   const style = {
     form: {

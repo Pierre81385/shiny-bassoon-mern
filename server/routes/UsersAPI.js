@@ -11,7 +11,9 @@ router.route("/registration").post(async (req, res) => {
   const emailTaken = await User.findOne({ email: user.email });
 
   if (usernameTaken || emailTaken) {
-    res.json({ message: "Username or email address already in use." });
+    res
+      .status(409)
+      .json({ message: "CONFLICT, Username or email address already in use." });
   } else {
     user.password = await bcrypt.hash(req.body.password, 10);
     const newUser = new User({
