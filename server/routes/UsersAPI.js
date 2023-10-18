@@ -26,16 +26,16 @@ router.route("/registration").post(async (req, res) => {
       .then(() => {
         res.status(200).json({ message: "User added!" });
       })
-      .catch((err) => res.status(400).json({ error: err }));
+      .catch((error) => res.status(400).json({ message: error }));
   }
 });
 
 //login user
-router.route("/login").post((req, res) => {
+router.route("/login").post(async (req, res) => {
   const user = req.body;
-  User.findOne({ username: user.username }).then((u) => {
+  await User.findOne({ username: user.username }).then((u) => {
     if (!u) {
-      return res.json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
     bcrypt.compare(user.password, u.password).then((match) => {
       if (match) {
@@ -47,11 +47,11 @@ router.route("/login").post((req, res) => {
           payload,
           process.env.TOKEN_SECRET,
           { expiresIn: 86400 },
-          (err, token) => {
-            if (err) {
-              return res.json({ error: err });
+          (error, token) => {
+            if (error) {
+              return res.status(401).json({ message: error });
             } else {
-              return res.json({
+              return res.status(200).json({
                 message: "Login Success!",
                 _id: u._id,
                 jwt: "Bearer " + token,
@@ -60,7 +60,7 @@ router.route("/login").post((req, res) => {
           }
         );
       } else {
-        return res.json({
+        return res.status(409).json({
           message: "Username or password is incorrect.",
         });
       }

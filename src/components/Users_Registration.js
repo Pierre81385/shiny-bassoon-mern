@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
-import Container from "react-bootstrap/esm/Container";
 import Form from "react-bootstrap/Form";
 import axios from "axios";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Row from "react-bootstrap/esm/Row";
 
 export default function UserRegistration() {
@@ -33,12 +32,11 @@ export default function UserRegistration() {
           email: "",
           password: "",
         });
-        setResp(response.data);
+        setResp(response);
         setSuccess(true);
         navigate("/users/login");
       })
       .catch((error) => {
-        console.log("caught!!!");
         setError({
           status: error.response.status,
           message: error.response.data.message,
@@ -62,9 +60,14 @@ export default function UserRegistration() {
   };
 
   const style = {
+    errorStatus: {},
+    errorMessage: {},
     form: {
       width: "50vw",
     },
+    formLabel: {},
+    formControl: {},
+    rowButtons: {},
     button: {
       width: "10vw",
       margin: "10px",
@@ -73,14 +76,15 @@ export default function UserRegistration() {
 
   return !success ? (
     <>
-      <h1>ERROR {error.status}</h1>
-      <h4>{error.message}</h4>
+      <h1 style={style.errorStatus}>ERROR {error.status}</h1>
+      <h4 style={style.errorMessage}>{error.message}</h4>
+      <p>{resp}</p>
       <Button
+        style={style.button}
         variant="dark"
         onClick={() => {
           setSuccess(true);
         }}
-        style={style.button}
       >
         BACK
       </Button>
@@ -89,10 +93,11 @@ export default function UserRegistration() {
     <>
       <h2>User Registration</h2>
 
-      <Form onSubmit={handleSubmit} style={style.form}>
+      <Form style={style.form} onSubmit={handleSubmit}>
         <Form.Group controlId="name">
-          <Form.Label>Username</Form.Label>
+          <Form.Label style={style.formLabel}>Username</Form.Label>
           <Form.Control
+            style={style.formControl}
             type="text"
             placeholder="Enter a username."
             name="username"
@@ -103,8 +108,9 @@ export default function UserRegistration() {
         </Form.Group>
 
         <Form.Group controlId="email">
-          <Form.Label>Email</Form.Label>
+          <Form.Label style={style.formLabel}>Email</Form.Label>
           <Form.Control
+            style={style.formControl}
             type="email"
             placeholder="Enter your email"
             name="email"
@@ -115,8 +121,9 @@ export default function UserRegistration() {
         </Form.Group>
 
         <Form.Group controlId="password">
-          <Form.Label>Password</Form.Label>
+          <Form.Label style={style.formLabel}>Password</Form.Label>
           <Form.Control
+            style={style.formControl}
             type="password"
             placeholder="Enter your password"
             name="password"
@@ -125,18 +132,18 @@ export default function UserRegistration() {
             required
           />
         </Form.Group>
-        <Row>
+        <Row style={style.rowButtons}>
           <Button
+            style={style.button}
             variant="dark"
             onClick={() => {
               navigate("/");
             }}
-            style={style.button}
           >
             HOME
           </Button>
 
-          <Button variant="dark" type="submit" style={style.button}>
+          <Button style={style.button} variant="dark" type="submit">
             REGISTER
           </Button>
         </Row>

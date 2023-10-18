@@ -3,33 +3,20 @@ import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
 import Row from "react-bootstrap/esm/Row";
 import axios from "axios";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function UserLogin() {
-  const style = {
-    form: {
-      width: "50vw",
-    },
-    button: {
-      width: "10vw",
-      margin: "10px",
-    },
-  };
-  // State to hold user input values
   const [req, setReq] = useState({
     username: "",
     password: "",
   });
-
-  const [success, setSuccess] = useState(false);
+  const [resp, setResp] = useState([{}]);
+  const [success, setSuccess] = useState(true);
+  const [error, setError] = useState({});
   const navigate = useNavigate();
 
-  // Function to handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // You can send the formData to your backend API for user registration here
-    console.log(req);
-    axios
+  const loginUser = async () => {
+    await axios
       .post(
         `http://localhost:4200/users/login`,
         {
@@ -41,23 +28,32 @@ export default function UserLogin() {
         }
       )
       .then((response) => {
-        localStorage.setItem("username", req.username);
-        setReq({
-          username: "",
-          password: "",
-        });
-        if (response.status === 200) {
-          localStorage.setItem("jwt", response.data.jwt);
+        if (
+          response.status === 200 &&
+          response.data.message === "Login Success!"
+        ) {
+          setResp(response);
           localStorage.setItem("_id", response.data._id);
+          localStorage.setItem("username", req.username);
+          localStorage.setItem("jwt", response.data.jwt);
           setSuccess(true);
-        } else {
-          localStorage.setItem("user", null);
-          console.log(response.status + " " + response.statusText);
+          navigate("/main");
         }
+      })
+      .catch((error) => {
+        setError({
+          status: error.response.status,
+          message: error.response.data.message,
+        });
+        setSuccess(false);
       });
   };
 
-  // Function to handle input changes
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    loginUser();
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setReq({
@@ -66,18 +62,45 @@ export default function UserLogin() {
     });
   };
 
-  return success ? (
+  const style = {
+    headline: {},
+    errorStatus: {},
+    errorMessage: {},
+    form: {
+      width: "50vw",
+    },
+    formLabel: {},
+    formControl: {},
+    button: {
+      width: "10vw",
+      margin: "10px",
+    },
+  };
+
+  return !success ? (
     <>
-      <Navigate to="/main" />;
+      <h1 style={style.errorStatus}>ERROR {error.status}</h1>
+      <h4 style={style.errorMessage}>{error.message}</h4>
+      <p>{resp}</p>
+      <Button
+        style={style.button}
+        variant="dark"
+        onClick={() => {
+          setSuccess(true);
+        }}
+      >
+        BACK
+      </Button>
     </>
   ) : (
     <>
-      <h2>User Login</h2>
+      <h2 style={style.headline}>User Login</h2>
 
       <Form onSubmit={handleSubmit} style={style.form}>
         <Form.Group controlId="name">
-          <Form.Label>Username</Form.Label>
+          <Form.Label style={style.formLabel}>Username</Form.Label>
           <Form.Control
+            style={style.formControl}
             type="text"
             placeholder="Username"
             name="username"
@@ -88,8 +111,9 @@ export default function UserLogin() {
         </Form.Group>
 
         <Form.Group controlId="password">
-          <Form.Label>Password</Form.Label>
+          <Form.Label style={style.formLabel}>Password</Form.Label>
           <Form.Control
+            style={style.formControl}
             type="password"
             placeholder="Enter your password"
             name="password"
@@ -98,17 +122,17 @@ export default function UserLogin() {
             required
           />
         </Form.Group>
-        <Row>
+        <Row style={style.rowButtons}>
           <Button
+            style={style.button}
             variant="dark"
             onClick={() => {
               navigate("/");
             }}
-            style={style.button}
           >
             HOME
           </Button>
-          <Button variant="dark" type="submit" style={style.button}>
+          <Button style={style.button} variant="dark" type="submit">
             LOGIN
           </Button>
         </Row>
