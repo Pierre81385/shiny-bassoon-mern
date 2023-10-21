@@ -5,8 +5,10 @@ import axios from "axios";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/esm/Card";
+import io from "socket.io-client";
+const socket = io.connect("http://localhost:4200/");
 
-export default function Rooms_DM() {
+export default function Rooms_DM({ socket }) {
   const { _id } = useParams();
   const thisUser = localStorage.getItem("_id");
   const navigate = useNavigate();
@@ -27,6 +29,12 @@ export default function Rooms_DM() {
     content: "",
   });
   const [display, setDisplay] = useState([]);
+
+  const dmSent = () => {
+    socket.emit("DM_Sent", {
+      message: `${user1.username} sent a direct message to ${user2.username}`,
+    });
+  };
 
   //check for existing DM room with their userID + your userID
   const checkDmRoomName = async () => {
@@ -196,6 +204,7 @@ export default function Rooms_DM() {
           content: "",
         });
         setUpdate(Date.now());
+        dmSent();
       })
       .catch((error) => {
         setError(error);
@@ -208,6 +217,10 @@ export default function Rooms_DM() {
       content: value,
     });
   };
+
+  socket.on("DM_Received", (data) => {
+    setUpdate(true);
+  });
 
   useEffect(() => {
     getTheirUserObject();

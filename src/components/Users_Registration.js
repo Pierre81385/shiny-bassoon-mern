@@ -5,7 +5,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Row from "react-bootstrap/esm/Row";
 
-export default function UserRegistration() {
+export default function UserRegistration({ socket }) {
   const [req, setReq] = useState({
     username: "",
     email: "",

@@ -1,14 +1,21 @@
-# Getting Started with Create React App
+# What is it?
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Find a bunch of fucking weirdos saying weird fucking things to one another. Create an account and jump into the discussion AOL chatroom style!
 
-## Available Scripts
+## Why is it cool?
 
-In the project directory, you can run:
+It's been a while since I used React for a project, so this is a full MERN stack application, incorperating Axios, JWT, Bootstrap, and Socket.io. This is the first time I'll be implementing websockets in an application!
 
-### `npm start`
+- Mongodb for storing user documents, while room documents store arrays of room members and chat transcripts.
+- Express.js and Node.js provide the backend server and API helped by Axios for requests, and JSON Web Tokens for authroization management.
+- React.js with Bootstrap provides the frontend.
+- Bringing everything together in real time, I've implemented a Socket.io server as the websocket provider.
+- Image/File upload/download capability is planned, which I'll take from my previous Instagram clone project.
 
-Runs the app in the development mode.\
+### Jump in by installing the dependencies and running `npm run start`.
+
+Concurrently will start the backend server at `http://localhost:4200` to access Mongodb, a Socket.io server will listen at `http://localhost:4200` for any updates, and the frontend is accessible at `http://localhost:3000`.
+
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
 The page will reload when you make changes.\

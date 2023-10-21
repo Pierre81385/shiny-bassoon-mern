@@ -45,10 +45,10 @@ io.on("connection", (socket) => {
   });
 
   // Define your Socket.IO logic here
-  socket.on("custom-event", (data) => {
-    console.log("Received custom event: " + data);
+  socket.on("DM_Sent", (data) => {
+    console.log("Received DM: " + data);
     // You can broadcast this data to other connected clients if needed
-    io.emit("custom-event", data);
+    io.emit("DM_Received", data);
   });
 
   socket.on("disconnect", () => {
@@ -67,41 +67,3 @@ app.use(
 server.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
 });
-
-// const express = require("express");
-// const mongoose = require("mongoose");
-// const cors = require("cors");
-// require("dotenv").config();
-
-// const app = express();
-// const port = process.env.PORT || 3001;
-// app.use(cors());
-// app.use(express.json());
-
-// const UserRouter = require("./routes/UsersAPI");
-// const RoomRouter = require("./routes/RoomsAPI");
-
-// app.use("/users", UserRouter);
-// app.use("/rooms", RoomRouter);
-
-// const uri = process.env.ATLAS_URI;
-// mongoose.connect(uri, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// });
-// const connection = mongoose.connection;
-// connection.once("open", () => {
-//   console.log("MongoDB database connection established successfully");
-// });
-
-// app.listen(port, () => {
-//   console.log(`Server is running on port: ${port}`);
-// });
-
-// app.use(
-//   cors({
-//     origin: ["http://localhost:4200"],
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//     credentials: true,
-//   })
-// );

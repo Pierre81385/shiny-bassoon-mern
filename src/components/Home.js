@@ -4,10 +4,8 @@ import Col from "react-bootstrap/esm/Col";
 import Container from "react-bootstrap/esm/Container";
 import Button from "react-bootstrap/esm/Button";
 import { useNavigate } from "react-router-dom";
-import io from "socket.io-client";
-const socket = io.connect("http://localhost:4200/");
 
-export default function Home() {
+export default function Home({ socket }) {
   const viewHome = () => {
     socket.emit("Viewed_Home", { message: "user is home" });
   };

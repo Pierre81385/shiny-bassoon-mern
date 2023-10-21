@@ -2,12 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Container from "react-bootstrap/esm/Container";
 import Button from "react-bootstrap/esm/Button";
-import Row from "react-bootstrap/esm/Row";
 import Col from "react-bootstrap/esm/Col";
 import Card from "react-bootstrap/esm/Card";
 import { useNavigate } from "react-router-dom";
 
-export default function Users_All() {
+export default function Users_All({ socket }) {
   const [resp, setResp] = useState([{}]);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();

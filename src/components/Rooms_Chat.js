@@ -5,7 +5,7 @@ import Card from "react-bootstrap/esm/Card";
 import Form from "react-bootstrap/esm/Form";
 import Button from "react-bootstrap/esm/Button";
 
-export default function Rooms_Chat() {
+export default function Rooms_Chat({ socket }) {
   const { _roomName } = useParams();
   const [error, setError] = useState([{}]);
   const [update, setUpdate] = useState(0);

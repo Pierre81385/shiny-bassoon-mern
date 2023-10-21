@@ -6,7 +6,7 @@ import axios from "axios";
 import Container from "react-bootstrap/esm/Container";
 import Card from "react-bootstrap/esm/Card";
 
-export default function Rooms_All() {
+export default function Rooms_All({ socket }) {
   const [room, setRoom] = useState({
     name: "",
     isPrivate: false,

@@ -5,7 +5,7 @@ import Row from "react-bootstrap/esm/Row";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-export default function UserLogin() {
+export default function UserLogin({ socket }) {
   const [req, setReq] = useState({
     username: "",
     password: "",
