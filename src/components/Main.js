@@ -43,11 +43,11 @@ export default function Main({ socket }) {
       <Row style={style.mainContainer}>
         <Col>
           <h2>Users</h2>
-          <USERS_ALL />
+          <USERS_ALL socket={socket} />
         </Col>
         <Col>
           <h2>Chatrooms</h2>
-          <ROOMS_ALL />
+          <ROOMS_ALL socket={socket} />
         </Col>
       </Row>
     </>

@@ -40,15 +40,16 @@ connection.once("open", () => {
 io.on("connection", (socket) => {
   console.log("A user connected");
 
-  socket.on("Viewed_Home", (data) => {
+  // direct message real-time updates
+  socket.on("DM_Sent", (data) => {
     console.log(data);
+    io.emit("DM_Received", data);
   });
 
-  // Define your Socket.IO logic here
-  socket.on("DM_Sent", (data) => {
-    console.log("Received DM: " + data);
-    // You can broadcast this data to other connected clients if needed
-    io.emit("DM_Received", data);
+  // chat room message real-time updates
+  socket.on("Message_Sent", (data) => {
+    console.log(data);
+    io.emit("Message_Received", data);
   });
 
   socket.on("disconnect", () => {

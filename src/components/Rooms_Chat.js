@@ -18,6 +18,12 @@ export default function Rooms_Chat({ socket }) {
   const sender = localStorage.getItem("username");
   const navigate = useNavigate();
 
+  const messageSent = () => {
+    socket.emit("Message_Sent", {
+      message: `${sender} sent a message to the chat.`,
+    });
+  };
+
   const leaveRoom = async () => {
     await axios
       .put(`http://localhost:4200/rooms/${_roomName}/leave/${thisUser}`, {
@@ -83,11 +89,16 @@ export default function Rooms_Chat({ socket }) {
           content: "",
         });
         setUpdate(Date.now());
+        messageSent();
       })
       .catch((error) => {
         setError(error);
       });
   };
+
+  socket.on("Message_Received", (data) => {
+    setUpdate(true);
+  });
 
   useEffect(() => {
     getRoomMessages();
@@ -200,7 +211,6 @@ export default function Rooms_Chat({ socket }) {
           </Button>
         </>
       )}
-      ;
     </>
   );
 }

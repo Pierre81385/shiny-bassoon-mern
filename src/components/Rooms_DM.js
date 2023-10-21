@@ -5,8 +5,6 @@ import axios from "axios";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/esm/Card";
-import io from "socket.io-client";
-const socket = io.connect("http://localhost:4200/");
 
 export default function Rooms_DM({ socket }) {
   const { _id } = useParams();
@@ -32,7 +30,7 @@ export default function Rooms_DM({ socket }) {
 
   const dmSent = () => {
     socket.emit("DM_Sent", {
-      message: `${user1.username} sent a direct message to ${user2.username}`,
+      message: `${user1.username} sent a direct message`,
     });
   };
 

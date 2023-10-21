@@ -42,7 +42,7 @@ export default function App() {
           <Route
             exact
             path="/rooms/:_roomName"
-            element={<ROOMS_CHAT />}
+            element={<ROOMS_CHAT socket={socket} />}
           ></Route>
           <Route
             exact
