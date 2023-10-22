@@ -30,7 +30,7 @@ export default function Rooms_DM({ socket }) {
 
   const dmSent = () => {
     socket.emit("DM_Sent", {
-      message: `${user1.username} sent a direct message`,
+      message: `${user2.username} sent a direct message`,
     });
   };
 
@@ -157,10 +157,11 @@ export default function Rooms_DM({ socket }) {
       .post(
         `http://localhost:4200/rooms/add`,
         {
-          name: success.dmRoomNameAltFound ? thisUser + _id : _id + thisUser,
+          name: _id + thisUser,
           isPrivate: true,
+          isDM: true,
           createdBy: thisUser,
-          members: [_id, thisUser],
+          members: [user1.username, user2.username],
         },
 
         {
@@ -189,9 +190,9 @@ export default function Rooms_DM({ socket }) {
 
     axios
       .put(
-        success.dmRoomNameAltFound
-          ? `http://localhost:4200/rooms/${dmRoomNameAlt}/message/${thisUser}`
-          : `http://localhost:4200/rooms/${dmRoomName}/message/${thisUser}`,
+        success.dmRoomNameFound
+          ? `http://localhost:4200/rooms/${dmRoomName}/message/${thisUser}`
+          : `http://localhost:4200/rooms/${dmRoomNameAlt}/message/${thisUser}`,
         {
           username: user2.username,
           content: message.content,

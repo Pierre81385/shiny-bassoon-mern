@@ -4,6 +4,8 @@ import axios from "axios";
 import Card from "react-bootstrap/esm/Card";
 import Form from "react-bootstrap/esm/Form";
 import Button from "react-bootstrap/esm/Button";
+import Row from "react-bootstrap/esm/Row";
+import Col from "react-bootstrap/esm/Col";
 
 export default function Rooms_Chat({ socket }) {
   const { _roomName } = useParams();
@@ -26,7 +28,7 @@ export default function Rooms_Chat({ socket }) {
 
   const leaveRoom = async () => {
     await axios
-      .put(`http://localhost:4200/rooms/${_roomName}/leave/${thisUser}`, {
+      .put(`http://localhost:4200/rooms/${_roomName}/leave/${sender}`, {
         responseType: "json",
       })
       .then((response) => {
@@ -41,7 +43,7 @@ export default function Rooms_Chat({ socket }) {
 
   const joinRoom = async () => {
     await axios
-      .put(`http://localhost:4200/rooms/${_roomName}/join/${thisUser}`, {
+      .put(`http://localhost:4200/rooms/${_roomName}/join/${sender}`, {
         responseType: "json",
       })
       .then((response) => {
@@ -68,6 +70,7 @@ export default function Rooms_Chat({ socket }) {
         if (response.status === 200 && response.data != null) {
           setDisplay(response.data.messages);
           setMemebers(response.data.members);
+          console.log(response.data.members);
           setUpdate(response.data.updatedAt);
         }
       })
@@ -133,39 +136,88 @@ export default function Rooms_Chat({ socket }) {
       shadowOpacity: 0.3,
       shadowRadius: 6,
     },
+    card: {
+      padding: "8px",
+      margin: "8px",
+    },
   };
 
   return (
     <>
-      <Card style={style.message}>
-        <Button
-          variant="dark"
-          style={style.button}
-          onClick={() => {
-            leaveRoom();
-          }}
-        >
-          LEAVE
-        </Button>
-        {display.map(({ user, username, content }) => {
-          return user === thisUser ? (
-            <Card style={style.message}>
-              <h4 style={style.sender}>
-                {content} :{username}
-              </h4>
-            </Card>
-          ) : (
-            <Card style={style.message}>
-              <h4>
-                {username}: {content}
-              </h4>
-            </Card>
-          );
-        })}
-      </Card>
-      <h5>{members.length} Members</h5>
+      <Row>
+        <Col>
+          <Card style={style.card}>
+            <h5>{members.length} Members</h5>
+            {members.map((index) => {
+              return index === localStorage.getItem("username") ? (
+                <Card style={style.card}>
+                  <Col>
+                    <h2>{index}</h2>
+                  </Col>
+                  <Col>
+                    <Button
+                      variant="dark"
+                      onClick={() => {
+                        navigate("/users/edit");
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  </Col>
+                </Card>
+              ) : (
+                <>
+                  <Col>
+                    <h2>{index}</h2>
+                  </Col>
+                  <Col>
+                    <Button
+                      variant="dark"
+                      onClick={() => {
+                        navigate(`/users/dm/${index}`);
+                      }}
+                    >
+                      DM (add username to API!)
+                    </Button>
+                  </Col>
+                </>
+              );
+            })}
+          </Card>
+        </Col>
+        <Col>
+          <Card style={style.message}>
+            <Button
+              variant="dark"
+              style={style.button}
+              onClick={() => {
+                leaveRoom();
+              }}
+            >
+              LEAVE
+            </Button>
+
+            {display.map(({ user, username, content }) => {
+              return user === thisUser ? (
+                <Card style={style.message}>
+                  <h4 style={style.sender}>
+                    {content} :{username}
+                  </h4>
+                </Card>
+              ) : (
+                <Card style={style.message}>
+                  <h4>
+                    {username}: {content}
+                  </h4>
+                </Card>
+              );
+            })}
+          </Card>
+        </Col>
+      </Row>
+
       {update === 0 ? <></> : <h5>Last update: {Date(update).toString()}</h5>}
-      {members.includes(localStorage.getItem("_id")) ? (
+      {members.includes(localStorage.getItem("username")) ? (
         <Form onSubmit={handleSubmit} style={style.form}>
           <Form.Group controlId="name">
             <Form.Label>Message</Form.Label>

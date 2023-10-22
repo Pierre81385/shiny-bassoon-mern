@@ -10,8 +10,9 @@ export default function Rooms_All({ socket }) {
   const [room, setRoom] = useState({
     name: "",
     isPrivate: false,
+    isDM: false,
     createdBy: localStorage.getItem("_id"),
-    members: [localStorage.getItem("_id")],
+    members: [localStorage.getItem("username")],
   });
   const [resp, setResp] = useState([
     { name: "", isPrivate: false, members: [""] },
@@ -33,6 +34,7 @@ export default function Rooms_All({ socket }) {
         {
           name: room.name,
           isPrivate: isEnabled,
+          isDM: false,
           createdBy: room.createdBy,
           members: room.members,
         },
@@ -114,8 +116,9 @@ export default function Rooms_All({ socket }) {
     setRoom({
       name: "",
       isPrivate: false,
+      isDM: false,
       createdBy: localStorage.getItem("_id"),
-      members: [localStorage.getItem("_id")],
+      members: [localStorage.getItem("username")],
     });
   };
 
@@ -189,71 +192,75 @@ export default function Rooms_All({ socket }) {
           Create
         </Button>
       </Form>
-      {resp.map(({ _id, name, isPrivate, members, updatedAt, createdBy }) => {
-        return (
-          <Card style={style.card}>
-            {!isPrivate ? (
-              <Container>
-                <h2>{name}</h2>
-                <h4>Members: {members.length}</h4>
-                <h4>Last active {updatedAt}</h4>
-                <Button
-                  variant="dark"
-                  style={style.button}
-                  onClick={() => {
-                    navigate(`/rooms/${name}`);
-                  }}
-                >
-                  Enter
-                </Button>
-                {createdBy === localStorage.getItem("_id") ? (
+      {resp.map(
+        ({ _id, name, isPrivate, isDM, members, updatedAt, createdBy }) => {
+          return (
+            <Card style={style.card}>
+              {isDM ? (
+                <></>
+              ) : isPrivate &&
+                members.includes(localStorage.getItem("username")) ? (
+                <Container>
+                  <h2>{name}</h2>
+                  <h4>Members: {members.length}</h4>
+                  <h4>Last active {updatedAt}</h4>
                   <Button
                     variant="dark"
                     style={style.button}
                     onClick={() => {
-                      deleteRoom(name);
+                      navigate(`/rooms/${name}`);
                     }}
                   >
-                    DELETE
+                    Enter
                   </Button>
-                ) : (
-                  <></>
-                )}
-              </Container>
-            ) : isPrivate && members.includes(localStorage.getItem("_id")) ? (
-              <Container>
-                <h2>{name}</h2>
-                <h4>Members: {members.length}</h4>
-                <h4>Last active {updatedAt}</h4>
-                <Button
-                  variant="dark"
-                  style={style.button}
-                  onClick={() => {
-                    navigate(`/rooms/${name}`);
-                  }}
-                >
-                  Enter
-                </Button>
-                {createdBy === localStorage.getItem("_id") ? (
+                  {createdBy === localStorage.getItem("_id") ? (
+                    <Button
+                      variant="dark"
+                      style={style.button}
+                      onClick={() => {
+                        deleteRoom(name);
+                      }}
+                    >
+                      DELETE
+                    </Button>
+                  ) : (
+                    <></>
+                  )}
+                </Container>
+              ) : (
+                <Container>
+                  <h2>{name}</h2>
+
+                  <h4>Members: {members.length}</h4>
+                  <h4>Last active {updatedAt}</h4>
                   <Button
                     variant="dark"
                     style={style.button}
                     onClick={() => {
-                      deleteRoom(name);
+                      navigate(`/rooms/${name}`);
                     }}
                   >
-                    DELETE
+                    Enter
                   </Button>
-                ) : (
-                  <></>
-                )}
-              </Container>
-            ) : (
-              <></>
-            )}
-          </Card>
-        );
-      })}
+                  {createdBy === localStorage.getItem("_id") ? (
+                    <Button
+                      variant="dark"
+                      style={style.button}
+                      onClick={() => {
+                        deleteRoom(name);
+                      }}
+                    >
+                      DELETE
+                    </Button>
+                  ) : (
+                    <></>
+                  )}
+                </Container>
+              )}
+            </Card>
+          );
+        }
+      )}
     </>
   );
 }

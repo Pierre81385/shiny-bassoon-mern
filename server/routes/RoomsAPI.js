@@ -7,11 +7,13 @@ router.route("/add").post((req, res) => {
   const createdBy = req.body.createdBy;
   const members = req.body.members;
   const isPrivate = req.body.isPrivate;
+  const isDM = req.body.isDM;
 
   const newRoom = new Room({
     name,
     createdBy,
     isPrivate,
+    isDM,
     members,
   });
 
@@ -53,11 +55,11 @@ router.route("/:name").put((req, res) => {
 });
 
 //join
-router.route("/:name/join/:userid").put((req, res) => {
+router.route("/:name/join/:username").put((req, res) => {
   Room.findOneAndUpdate(
     { name: req.params.name },
     {
-      $addToSet: { members: req.params.userid },
+      $addToSet: { members: req.params.username },
     },
     {
       new: true,
@@ -72,12 +74,12 @@ router.route("/:name/join/:userid").put((req, res) => {
 });
 
 //leave
-router.route("/:name/leave/:userid").put((req, res) => {
+router.route("/:name/leave/:username").put((req, res) => {
   Room.findOneAndUpdate(
     { name: req.params.name },
     {
       $pull: {
-        members: req.params.userid,
+        members: req.params.username,
       },
     },
     {

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/esm/Button";
+import Form from "react-bootstrap/esm/Form";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Row from "react-bootstrap/esm/Row";
+import Container from "react-bootstrap/esm/Container";
 
 export default function UserRegistration({ socket }) {
   const [req, setReq] = useState({
@@ -60,10 +61,19 @@ export default function UserRegistration({ socket }) {
   };
 
   const style = {
+    container: {
+      height: "100vh",
+      width: "100vw",
+      display: "flex",
+      flexDirection: "column",
+      textAlign: "center",
+      justifyContent: "center",
+    },
     errorStatus: {},
     errorMessage: {},
     form: {
       width: "50vw",
+      margin: "auto",
     },
     formLabel: {},
     formControl: {},
@@ -72,10 +82,13 @@ export default function UserRegistration({ socket }) {
       width: "10vw",
       margin: "10px",
     },
+    rowButtons: {
+      justifyContent: "center",
+    },
   };
 
   return !success ? (
-    <>
+    <Container style={style.container}>
       <h1 style={style.errorStatus}>ERROR {error.status}</h1>
       <h4 style={style.errorMessage}>{error.message}</h4>
       <p>{resp}</p>
@@ -88,12 +101,11 @@ export default function UserRegistration({ socket }) {
       >
         BACK
       </Button>
-    </>
+    </Container>
   ) : (
-    <>
-      <h2>User Registration</h2>
-
+    <Container style={style.container}>
       <Form style={style.form} onSubmit={handleSubmit}>
+        <h1>REGISTER</h1>
         <Form.Group controlId="name">
           <Form.Label style={style.formLabel}>Username</Form.Label>
           <Form.Control
@@ -148,6 +160,6 @@ export default function UserRegistration({ socket }) {
           </Button>
         </Row>
       </Form>
-    </>
+    </Container>
   );
 }

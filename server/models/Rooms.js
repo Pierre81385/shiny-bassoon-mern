@@ -17,6 +17,10 @@ const roomSchema = new Schema(
       type: Boolean,
       required: true,
     },
+    isDM: {
+      type: Boolean,
+      required: true,
+    },
     createdBy: {
       type: String,
       required: true,
