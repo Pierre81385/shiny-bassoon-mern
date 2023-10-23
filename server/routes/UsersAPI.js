@@ -3,6 +3,7 @@ const User = require("../models/Users");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const authenticateToken = require("../utils/jwtVerify");
+const { response } = require("express");
 
 //create new user
 router.route("/registration").post(async (req, res) => {
@@ -20,11 +21,12 @@ router.route("/registration").post(async (req, res) => {
       username: user.username,
       email: user.email,
       password: user.password,
+      online: false,
     });
     newUser
       .save()
       .then(() => {
-        res.status(200).json({ message: "User added!" });
+        res.status(200).json({ message: "User added!", user: newUser });
       })
       .catch((error) => res.status(400).json({ message: error }));
   }
@@ -53,7 +55,7 @@ router.route("/login").post(async (req, res) => {
             } else {
               return res.status(200).json({
                 message: "Login Success!",
-                _id: u._id,
+                user: u,
                 jwt: "Bearer " + token,
               });
             }
@@ -83,15 +85,23 @@ router.route("/:id").get(authenticateToken, (req, res) => {
 });
 
 //update
-router.route("/:id").put(authenticateToken, (req, res) => {
-  const { id } = req.params.id;
-  User.findByIdAndUpdate(id, {
-    username: req.body.username,
-    email: req.body.email,
-    password: req.body.password,
-  })
-    .then(() => {
-      res.status(200).json("User updated!");
+router.route("/:name").put(authenticateToken, async (req, res) => {
+  console.log(req);
+  await User.findOneAndUpdate(
+    { name: req.params.name },
+    {
+      $set: {
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password,
+      },
+    },
+    {
+      new: true,
+    }
+  )
+    .then((data) => {
+      res.status(200).json({ message: "Success!" });
     })
     .catch((err) => {
       res.status(400).json("Error: " + err);

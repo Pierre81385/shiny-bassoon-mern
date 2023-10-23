@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from "react";
+
 import Row from "react-bootstrap/esm/Row";
 import Col from "react-bootstrap/esm/Col";
 import Button from "react-bootstrap/esm/Button";
@@ -8,6 +10,7 @@ import Container from "react-bootstrap/esm/Container";
 
 export default function Main({ socket }) {
   const navigate = useNavigate();
+
   const style = {
     mainContainer: {
       height: "100vh",
@@ -50,6 +53,9 @@ export default function Main({ socket }) {
           <Button
             variant="dark"
             onClick={() => {
+              socket.emit("Logout", {
+                username: localStorage.getItem("username"),
+              });
               localStorage.clear();
               navigate("/");
             }}

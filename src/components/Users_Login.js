@@ -30,25 +30,23 @@ export default function UserLogin({ socket }) {
         }
       )
       .then((response) => {
-        const statusLogs = [];
         if (
           response.status === 200 &&
           response.data.message === "Login Success!"
         ) {
           setResp(response);
-          localStorage.setItem("_id", response.data._id);
+          localStorage.setItem("_id", response.data.user._id);
           localStorage.setItem("username", req.username);
           localStorage.setItem("jwt", response.data.jwt);
-
-          setSuccess(true);
-
+          //user login successful -> send socket.io user ID
+          socket.emit("Login", { username: req.username });
           navigate("/main");
         }
       })
       .catch((error) => {
         setError({
-          status: error.response.status,
-          message: error.response.data.message,
+          status: error.status,
+          message: error.message,
         });
         setSuccess(false);
       });
@@ -98,7 +96,6 @@ export default function UserLogin({ socket }) {
     <Container style={style.container}>
       <h1 style={style.errorStatus}>ERROR {error.status}</h1>
       <h4 style={style.errorMessage}>{error.message}</h4>
-      <p>{resp}</p>
       <Button
         style={style.button}
         variant="dark"

@@ -38,7 +38,9 @@ export default function Home({ socket }) {
   };
 
   useEffect(() => {
-    console.log("use effect called");
+    socket.emit("Logout", { username: localStorage.getItem("username") });
+    localStorage.clear();
+    console.log("logout user, clear localStorage to reset");
   }, []);
 
   return (

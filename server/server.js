@@ -36,9 +36,26 @@ connection.once("open", () => {
   console.log("MongoDB database connection established successfully");
 });
 
+const online = [];
 // Socket.IO setup
 io.on("connection", (socket) => {
   console.log("A user connected");
+
+  //notify of user login
+  socket.on("Login", function (data) {
+    console.log("a user connected");
+    online.push(data.username);
+    io.emit("Notify_Login", online);
+  });
+
+  socket.on("Logout", function (data) {
+    console.log("a user disconnected");
+    const index = online.indexOf(data.username);
+    if (index > -1) {
+      online.splice(index, 1);
+    }
+    io.emit("Notify_Logout", online);
+  });
 
   // direct message real-time updates
   socket.on("DM_Sent", (data) => {
@@ -52,8 +69,8 @@ io.on("connection", (socket) => {
     io.emit("Message_Received", data);
   });
 
-  socket.on("disconnect", () => {
-    console.log("A user disconnected");
+  socket.on("disconnect", (data) => {
+    console.log("user disconnected");
   });
 });
 
