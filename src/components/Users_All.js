@@ -1,33 +1,31 @@
-import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Container from "react-bootstrap/esm/Container";
-import Button from "react-bootstrap/esm/Button";
-import Col from "react-bootstrap/esm/Col";
-import Row from "react-bootstrap/esm/Row";
-import Card from "react-bootstrap/esm/Card";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ListGroup from "react-bootstrap/esm/ListGroup";
+import ListGroupItem from "react-bootstrap/esm/ListGroupItem";
+import Badge from "react-bootstrap/esm/Badge";
 
-export default function Users_All({ socket }) {
-  const [resp, setResp] = useState([{}]);
-  const [success, setSuccess] = useState(false);
+export default function AllUsers({ socket }) {
+  const [users, setUsers] = useState([{}]);
   const [online, setOnline] = useState([]);
   const navigate = useNavigate();
 
-  const style = {
-    card: {
-      padding: "8px",
-      margin: "8px",
-    },
-  };
-
-  socket.on("Notify_Login", (users) => {
-    console.log(users);
-    setOnline(users);
+  socket.on("Notify_Login", (active) => {
+    setOnline(active);
   });
 
-  socket.on("Notify_Logout", (users) => {
-    console.log(users);
-    setOnline(users);
+  socket.on("Notify_Logout", (active) => {
+    setOnline(active);
+  });
+
+  socket.on("DM_Received", (data) => {
+    if (localStorage.getItem(data.from) === null) {
+      localStorage.setItem(data.from, 1);
+    } else {
+      let num = localStorage.getItem(data.from);
+      num++;
+      localStorage.setItem(data.from, num);
+    }
   });
 
   const getUsers = async () => {
@@ -40,93 +38,47 @@ export default function Users_All({ socket }) {
         }
       )
       .then((response) => {
-        setResp(response.data);
-        if (response.status === 200 && response.data != null) {
-          setSuccess(true);
-        }
+        setUsers(response.data);
       })
       .catch((error) => {
-        setSuccess(false);
-        setResp(error);
+        if (error != null) {
+          console.log(error);
+        }
       });
   };
 
   useEffect(() => {
     getUsers();
-  }, [online]);
+  }, []);
 
-  return !success ? (
+  return (
     <>
-      <Container>
-        <h3>{resp.message}</h3>
-        <Button
-          onClick={() => {
-            navigate("/users/login");
-          }}
-        >
-          back to Login
-        </Button>
-      </Container>
+      <ListGroup>
+        {users.map(({ _id, username }) => {
+          return username === localStorage.getItem("username") ? (
+            <></>
+          ) : (
+            <ListGroupItem
+              key={_id}
+              className="d-flex justify-content-between align-items-start"
+              onClick={() => {
+                localStorage.setItem(username, 0);
+                navigate(`/users/dm/${_id}`);
+              }}
+            >
+              <div className="ms-2 me-auto">
+                <div className="fw-bold">{username}</div>
+                {online.includes(username) ? "Online" : "Offline"}
+              </div>
+              <Badge pill bg="dark">
+                {localStorage.getItem(username) === null
+                  ? 0
+                  : localStorage.getItem(username)}
+              </Badge>
+            </ListGroupItem>
+          );
+        })}
+      </ListGroup>
     </>
-  ) : (
-    <Card style={style.card}>
-      {resp.map(({ _id, username }) => {
-        return username === localStorage.getItem("username") ? (
-          <Card style={style.card}>
-            <Col>
-              <h2>{username}</h2>
-            </Col>
-            <Col>
-              <Button
-                variant="dark"
-                onClick={() => {
-                  navigate("/users/edit");
-                }}
-              >
-                Edit
-              </Button>
-            </Col>
-          </Card>
-        ) : (
-          <>
-            <Col>
-              {online.includes(username) ? (
-                <Row>
-                  <Col style={{ textAlign: "end" }}>
-                    <h2>{username}</h2>
-                  </Col>
-                  <Col
-                    style={{ textAlign: "center", justifyContent: "center" }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="25"
-                      height="25"
-                      fill="green"
-                      class="bi bi-broadcast"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="M3.05 3.05a7 7 0 0 0 0 9.9.5.5 0 0 1-.707.707 8 8 0 0 1 0-11.314.5.5 0 0 1 .707.707zm2.122 2.122a4 4 0 0 0 0 5.656.5.5 0 1 1-.708.708 5 5 0 0 1 0-7.072.5.5 0 0 1 .708.708zm5.656-.708a.5.5 0 0 1 .708 0 5 5 0 0 1 0 7.072.5.5 0 1 1-.708-.708 4 4 0 0 0 0-5.656.5.5 0 0 1 0-.708zm2.122-2.12a.5.5 0 0 1 .707 0 8 8 0 0 1 0 11.313.5.5 0 0 1-.707-.707 7 7 0 0 0 0-9.9.5.5 0 0 1 0-.707zM10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" />
-                    </svg>
-                  </Col>
-                  <Col>
-                    <Button
-                      variant="dark"
-                      onClick={() => {
-                        navigate(`/users/dm/${_id}`);
-                      }}
-                    >
-                      DM
-                    </Button>
-                  </Col>
-                </Row>
-              ) : (
-                <h2>{username}</h2>
-              )}
-            </Col>
-          </>
-        );
-      })}
-    </Card>
   );
 }

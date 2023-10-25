@@ -7,6 +7,7 @@ import Button from "react-bootstrap/esm/Button";
 import Row from "react-bootstrap/esm/Row";
 import Col from "react-bootstrap/esm/Col";
 import Container from "react-bootstrap/esm/Container";
+import TEST from "./Users_All";
 
 export default function Rooms_Chat({ socket }) {
   const { _roomName } = useParams();
@@ -140,32 +141,7 @@ export default function Rooms_Chat({ socket }) {
       </Button>
       <Row>
         <Col>
-          <Card>
-            <Card.Header>
-              <h5>{members.length} Members</h5>
-            </Card.Header>
-            {members.map((index) => {
-              return index === localStorage.getItem("username") ? (
-                <Card>
-                  <h2>{index}</h2>
-                  <Card.Footer>
-                    <Button
-                      variant="dark"
-                      onClick={() => {
-                        navigate("/users/edit");
-                      }}
-                    >
-                      Edit
-                    </Button>
-                  </Card.Footer>
-                </Card>
-              ) : (
-                <Card>
-                  <h2>{index}</h2>
-                </Card>
-              );
-            })}
-          </Card>
+          <TEST socket={socket} />
         </Col>
         <Col>
           <Container>
