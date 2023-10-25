@@ -59,7 +59,6 @@ io.on("connection", (socket) => {
 
   // direct message real-time updates
   socket.on("DM_Sent", (data) => {
-    console.log(data);
     io.emit("DM_Received", data);
   });
 

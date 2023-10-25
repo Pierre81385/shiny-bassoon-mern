@@ -6,6 +6,7 @@ import Form from "react-bootstrap/esm/Form";
 import Button from "react-bootstrap/esm/Button";
 import Row from "react-bootstrap/esm/Row";
 import Col from "react-bootstrap/esm/Col";
+import Container from "react-bootstrap/esm/Container";
 
 export default function Rooms_Chat({ socket }) {
   const { _roomName } = useParams();
@@ -16,9 +17,20 @@ export default function Rooms_Chat({ socket }) {
   });
   const [display, setDisplay] = useState([]);
   const [members, setMemebers] = useState([]);
+  const [online, setOnline] = useState([]);
   const thisUser = localStorage.getItem("_id");
   const sender = localStorage.getItem("username");
   const navigate = useNavigate();
+
+  socket.on("Notify_Login", (users) => {
+    console.log(users);
+    setOnline(users);
+  });
+
+  socket.on("Notify_Logout", (users) => {
+    console.log(users);
+    setOnline(users);
+  });
 
   const messageSent = () => {
     socket.emit("Message_Sent", {
@@ -114,47 +126,29 @@ export default function Rooms_Chat({ socket }) {
     });
   };
 
-  const style = {
-    form: {
-      width: "50vw",
-    },
-    button: {
-      width: "10vw",
-      margin: "10px",
-    },
-    sender: {
-      textAlign: "right",
-    },
-    message: {
-      padding: "8px",
-      margin: "8px",
-      shadowColor: "black",
-      shadowOffset: {
-        width: 0,
-        height: 4,
-      },
-      shadowOpacity: 0.3,
-      shadowRadius: 6,
-    },
-    card: {
-      padding: "8px",
-      margin: "8px",
-    },
-  };
+  const style = {};
 
   return (
-    <>
+    <Card>
+      <Button
+        variant="dark"
+        onClick={() => {
+          leaveRoom();
+        }}
+      >
+        LEAVE
+      </Button>
       <Row>
         <Col>
-          <Card style={style.card}>
-            <h5>{members.length} Members</h5>
+          <Card>
+            <Card.Header>
+              <h5>{members.length} Members</h5>
+            </Card.Header>
             {members.map((index) => {
               return index === localStorage.getItem("username") ? (
-                <Card style={style.card}>
-                  <Col>
-                    <h2>{index}</h2>
-                  </Col>
-                  <Col>
+                <Card>
+                  <h2>{index}</h2>
+                  <Card.Footer>
                     <Button
                       variant="dark"
                       onClick={() => {
@@ -163,106 +157,84 @@ export default function Rooms_Chat({ socket }) {
                     >
                       Edit
                     </Button>
-                  </Col>
+                  </Card.Footer>
                 </Card>
               ) : (
-                <>
-                  <Col>
-                    <h2>{index}</h2>
-                  </Col>
-                  <Col>
-                    <Button
-                      variant="dark"
-                      onClick={() => {
-                        navigate(`/users/dm/${index}`);
-                      }}
-                    >
-                      DM (add username to API!)
-                    </Button>
-                  </Col>
-                </>
+                <Card>
+                  <h2>{index}</h2>
+                </Card>
               );
             })}
           </Card>
         </Col>
         <Col>
-          <Card style={style.message}>
-            <Button
-              variant="dark"
-              style={style.button}
-              onClick={() => {
-                leaveRoom();
-              }}
-            >
-              LEAVE
-            </Button>
-
-            {display.map(({ user, username, content }) => {
-              return user === thisUser ? (
-                <Card style={style.message}>
-                  <h4 style={style.sender}>
-                    {content} :{username}
-                  </h4>
-                </Card>
-              ) : (
-                <Card style={style.message}>
-                  <h4>
-                    {username}: {content}
-                  </h4>
-                </Card>
-              );
-            })}
-          </Card>
+          <Container>
+            <Card>
+              {display.map(({ user, username, content }) => {
+                return user === thisUser ? (
+                  <Card>
+                    <h4>{content}</h4>
+                    <Card.Footer>{username}</Card.Footer>
+                  </Card>
+                ) : (
+                  <Card>
+                    <h4>{content}</h4>
+                    <Card.Footer>{username}</Card.Footer>
+                  </Card>
+                );
+              })}
+            </Card>
+          </Container>
         </Col>
       </Row>
-
-      {update === 0 ? <></> : <h5>Last update: {Date(update).toString()}</h5>}
-      {members.includes(localStorage.getItem("username")) ? (
-        <Form onSubmit={handleSubmit} style={style.form}>
-          <Form.Group controlId="name">
-            <Form.Label>Message</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder=""
-              name="content"
-              value={message.content}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-          <Button
-            variant="dark"
-            onClick={() => {
-              navigate("/main");
-            }}
-          >
-            BACK
-          </Button>
-          <Button variant="dark" type="submit" style={style.button}>
-            SEND
-          </Button>
-        </Form>
-      ) : (
-        <>
-          <Button
-            variant="dark"
-            onClick={() => {
-              navigate("/main");
-            }}
-          >
-            BACK
-          </Button>
-          <Button
-            variant="dark"
-            style={style.button}
-            onClick={() => {
-              joinRoom();
-            }}
-          >
-            JOIN
-          </Button>
-        </>
-      )}
-    </>
+      <Container>
+        {update === 0 ? <></> : <h5>Last update: {Date(update).toString()}</h5>}
+        {members.includes(localStorage.getItem("username")) ? (
+          <Form onSubmit={handleSubmit}>
+            <Form.Group controlId="name">
+              <Form.Label>Message</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder=""
+                name="content"
+                value={message.content}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+            <Button
+              variant="dark"
+              onClick={() => {
+                navigate("/main");
+              }}
+            >
+              BACK
+            </Button>
+            <Button variant="dark" type="submit">
+              SEND
+            </Button>
+          </Form>
+        ) : (
+          <>
+            <Button
+              variant="dark"
+              onClick={() => {
+                navigate("/main");
+              }}
+            >
+              BACK
+            </Button>
+            <Button
+              variant="dark"
+              onClick={() => {
+                joinRoom();
+              }}
+            >
+              JOIN
+            </Button>
+          </>
+        )}
+      </Container>
+    </Card>
   );
 }

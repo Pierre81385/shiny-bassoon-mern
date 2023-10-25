@@ -11,6 +11,9 @@ import ROOMS_ALL from "./components/Rooms_All";
 import MAIN from "./components/Main";
 import ROOMS_CHAT from "./components/Rooms_Chat";
 import io from "socket.io-client";
+import ThemeProvider from "react-bootstrap/ThemeProvider";
+import TEST from "./test";
+
 const socket = io.connect("http://localhost:4200/");
 
 export default function App() {
@@ -19,43 +22,57 @@ export default function App() {
   };
 
   return (
-    <Container style={style.container}>
-      <BrowserRouter>
-        <Routes>
-          <Route exact path="/" element={<HOME socket={socket} />}></Route>
-          <Route exact path="/main" element={<MAIN socket={socket} />}></Route>
-          <Route
-            exact
-            path="/users/registration"
-            element={<USERS_REGISTRATION socket={socket} />}
-          ></Route>
-          <Route
-            exact
-            path="/users/login"
-            element={<USERS_LOGIN socket={socket} />}
-          ></Route>
-          <Route
-            exact
-            path="/users/dm/:_id"
-            element={<ROOMS_DM socket={socket} />}
-          ></Route>
-          <Route
-            exact
-            path="/rooms/:_roomName"
-            element={<ROOMS_CHAT socket={socket} />}
-          ></Route>
-          <Route
-            exact
-            path="/rooms/all"
-            element={<ROOMS_ALL socket={socket} />}
-          ></Route>
-          <Route
-            exact
-            path="/users/all"
-            element={<USERS_ALL socket={socket} />}
-          ></Route>
-        </Routes>
-      </BrowserRouter>
-    </Container>
+    <ThemeProvider
+      breakpoints={["xxxl", "xxl", "xl", "lg", "md", "sm", "xs", "xxs"]}
+      minBreakpoint="xxs"
+    >
+      <Container style={style.container}>
+        <BrowserRouter>
+          <Routes>
+            <Route exact path="/" element={<HOME socket={socket} />}></Route>
+            <Route
+              exact
+              path="/main"
+              element={<MAIN socket={socket} />}
+            ></Route>
+            <Route
+              exact
+              path="/users/registration"
+              element={<USERS_REGISTRATION socket={socket} />}
+            ></Route>
+            <Route
+              exact
+              path="/users/login"
+              element={<USERS_LOGIN socket={socket} />}
+            ></Route>
+            <Route
+              exact
+              path="/users/dm/:_id"
+              element={<ROOMS_DM socket={socket} />}
+            ></Route>
+            <Route
+              exact
+              path="/rooms/:_roomName"
+              element={<ROOMS_CHAT socket={socket} />}
+            ></Route>
+            <Route
+              exact
+              path="/rooms/all"
+              element={<ROOMS_ALL socket={socket} />}
+            ></Route>
+            <Route
+              exact
+              path="/users/all"
+              element={<USERS_ALL socket={socket} />}
+            ></Route>
+            <Route
+              exact
+              path="/test"
+              element={<TEST socket={socket} />}
+            ></Route>
+          </Routes>
+        </BrowserRouter>
+      </Container>
+    </ThemeProvider>
   );
 }

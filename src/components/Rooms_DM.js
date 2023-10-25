@@ -30,7 +30,7 @@ export default function Rooms_DM({ socket }) {
 
   const dmSent = () => {
     socket.emit("DM_Sent", {
-      message: `${user2.username} sent a direct message`,
+      from: user2.username,
     });
   };
 
