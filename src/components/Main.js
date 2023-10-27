@@ -7,7 +7,6 @@ import USERS_ALL from "./Users_All";
 import ROOMS_ALL from "./Rooms_All";
 import { useNavigate } from "react-router-dom";
 import Container from "react-bootstrap/esm/Container";
-import TEST from "./Users_All";
 
 export default function Main({ socket }) {
   const navigate = useNavigate();
@@ -68,7 +67,7 @@ export default function Main({ socket }) {
       <Row style={style.container}>
         <Col>
           <h2 style={style.header}>Users</h2>
-          <TEST socket={socket} />
+          <USERS_ALL socket={socket} />
         </Col>
         <Col>
           <h2 style={style.header}>Chatrooms</h2>

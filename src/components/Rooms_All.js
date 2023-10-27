@@ -4,9 +4,10 @@ import Form from "react-bootstrap/esm/Form";
 import Button from "react-bootstrap/esm/Button";
 import axios from "axios";
 import Container from "react-bootstrap/esm/Container";
-import Card from "react-bootstrap/esm/Card";
+import ListGroup from "react-bootstrap/esm/ListGroup";
+import ListGroupItem from "react-bootstrap/esm/ListGroupItem";
 
-export default function Rooms_All({ socket }) {
+export default function ROOMS_ALL({ socket }) {
   const [room, setRoom] = useState({
     name: "",
     isPrivate: false,
@@ -15,7 +16,7 @@ export default function Rooms_All({ socket }) {
     members: [localStorage.getItem("username")],
   });
   const [resp, setResp] = useState([
-    { name: "", isPrivate: false, members: [""] },
+    { name: "", isPrivate: false, isDM: false, members: [""] },
   ]);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState({
@@ -151,20 +152,7 @@ export default function Rooms_All({ socket }) {
     },
   };
 
-  return !success.foundRooms ? (
-    <>
-      <Container>
-        <h3>{resp.message}</h3>
-        <Button
-          onClick={() => {
-            navigate("/users/login");
-          }}
-        >
-          back to Login
-        </Button>
-      </Container>
-    </>
-  ) : (
+  return (
     <>
       <Form onSubmit={handleSubmit} style={style.form}>
         <Form.Group controlId="name">
@@ -192,75 +180,65 @@ export default function Rooms_All({ socket }) {
           Create
         </Button>
       </Form>
-      {resp.map(
-        ({ _id, name, isPrivate, isDM, members, updatedAt, createdBy }) => {
-          return (
-            <Card style={style.card}>
-              {isDM ? (
-                <></>
-              ) : isPrivate &&
-                members.includes(localStorage.getItem("username")) ? (
-                <Container>
-                  <h2>{name}</h2>
-                  <h4>Members: {members.length}</h4>
-                  <h4>Last active {updatedAt}</h4>
-                  <Button
-                    variant="dark"
-                    style={style.button}
-                    onClick={() => {
-                      navigate(`/rooms/${name}`);
-                    }}
-                  >
-                    Enter
-                  </Button>
-                  {createdBy === localStorage.getItem("_id") ? (
-                    <Button
-                      variant="dark"
-                      style={style.button}
-                      onClick={() => {
-                        deleteRoom(name);
-                      }}
-                    >
-                      DELETE
-                    </Button>
-                  ) : (
-                    <></>
-                  )}
-                </Container>
-              ) : (
-                <Container>
-                  <h2>{name}</h2>
-
-                  <h4>Members: {members.length}</h4>
-                  <h4>Last active {updatedAt}</h4>
-                  <Button
-                    variant="dark"
-                    style={style.button}
-                    onClick={() => {
-                      navigate(`/rooms/${name}`);
-                    }}
-                  >
-                    Enter
-                  </Button>
-                  {createdBy === localStorage.getItem("_id") ? (
-                    <Button
-                      variant="dark"
-                      style={style.button}
-                      onClick={() => {
-                        deleteRoom(name);
-                      }}
-                    >
-                      DELETE
-                    </Button>
-                  ) : (
-                    <></>
-                  )}
-                </Container>
-              )}
-            </Card>
-          );
-        }
-      )}
+      <ListGroup>
+        {resp.map(
+          ({ _id, name, isPrivate, isDM, members, updatedAt, createdBy }) => {
+            return isDM ? (
+              <></>
+            ) : (
+              <ListGroupItem
+                key={_id}
+                className="d-flex justify-content-between align-items-start"
+                onClick={() => {
+                  if (
+                    isPrivate &&
+                    members.includes(localStorage.getItem("username"))
+                  ) {
+                    navigate(`/rooms/${name}`);
+                  } else if (
+                    isPrivate &&
+                    !members.includes(localStorage.getItem("username"))
+                  ) {
+                    alert(
+                      "This is a private room.  Reach out to the room admin to join!"
+                    );
+                  } else {
+                    navigate(`/rooms/${name}`);
+                  }
+                }}
+              >
+                <div className="ms-2 me-auto">
+                  <div className="fw-bold">
+                    {name}{" "}
+                    {isPrivate ? (
+                      <>
+                        -{" "}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          class="bi bi-file-lock2-fill"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M7 6a1 1 0 0 1 2 0v1H7V6z" />
+                          <path d="M12 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm-2 6v1.076c.54.166 1 .597 1 1.224v2.4c0 .816-.781 1.3-1.5 1.3h-3c-.719 0-1.5-.484-1.5-1.3V8.3c0-.627.46-1.058 1-1.224V6a2 2 0 1 1 4 0z" />
+                        </svg>
+                      </>
+                    ) : (
+                      <></>
+                    )}
+                    - admin: {members[0]}
+                  </div>
+                  {members.includes(localStorage.getItem("username"))
+                    ? `${members.length} members, including you.`
+                    : `${members.length} members`}
+                </div>
+              </ListGroupItem>
+            );
+          }
+        )}
+      </ListGroup>
     </>
   );
 }

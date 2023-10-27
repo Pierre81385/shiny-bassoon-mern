@@ -12,7 +12,7 @@ import MAIN from "./components/Main";
 import ROOMS_CHAT from "./components/Rooms_Chat";
 import io from "socket.io-client";
 import ThemeProvider from "react-bootstrap/ThemeProvider";
-import TEST from "./test";
+import TEST from "./components/test";
 
 const socket = io.connect("http://localhost:4200/");
 

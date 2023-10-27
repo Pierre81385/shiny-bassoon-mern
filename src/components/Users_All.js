@@ -5,7 +5,7 @@ import ListGroup from "react-bootstrap/esm/ListGroup";
 import ListGroupItem from "react-bootstrap/esm/ListGroupItem";
 import Badge from "react-bootstrap/esm/Badge";
 
-export default function AllUsers({ socket }) {
+export default function USERS_ALL({ socket }) {
   const [users, setUsers] = useState([{}]);
   const [online, setOnline] = useState([]);
   const navigate = useNavigate();
