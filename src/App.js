@@ -9,10 +9,10 @@ import Container from "react-bootstrap/esm/Container";
 import ROOMS_DM from "./components/Rooms_DM";
 import ROOMS_ALL from "./components/Rooms_All";
 import MAIN from "./components/Main";
-import ROOMS_CHAT from "./components/Rooms_Chat";
+import ROOMS_CHAT from "./components/Rooms_Chat_View";
 import io from "socket.io-client";
 import ThemeProvider from "react-bootstrap/ThemeProvider";
-import TEST from "./components/test";
+import TEST from "./components/Rooms_Chat";
 
 const socket = io.connect("http://localhost:4200/");
 
