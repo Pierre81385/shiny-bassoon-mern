@@ -6,17 +6,28 @@ import axios from "axios";
 import Form from "react-bootstrap/esm/Form";
 import Button from "react-bootstrap/esm/Button";
 import Card from "react-bootstrap/esm/Card";
+import Container from "react-bootstrap/esm/Container";
 
 export default function Chat({ socket }) {
   const [chat, setChat] = useState([]);
   const [members, setMemebers] = useState([]);
   const [update, setUpdate] = useState(0);
-  const [error, setError] = useState([{}]);
+  const [error, setError] = useState(null);
   const [message, setMessage] = useState("");
   const { _roomName } = useParams();
   const thisUser = localStorage.getItem("_id");
   const sender = localStorage.getItem("username");
   const navigate = useNavigate();
+
+  const messageSent = () => {
+    socket.emit("Message_Sent", {
+      message: `${sender} sent a message to the chat.`,
+    });
+  };
+
+  socket.on("Message_Received", (data) => {
+    setUpdate(Date.now());
+  });
 
   const getRoomMessages = async () => {
     await axios
@@ -28,7 +39,6 @@ export default function Chat({ socket }) {
         }
       )
       .then((response) => {
-        console.log(response);
         if (response.status === 200 && response.data != null) {
           setChat(response.data.messages);
           setMemebers(response.data.members);
@@ -56,30 +66,9 @@ export default function Chat({ socket }) {
       });
   };
 
-  const messageSent = () => {
-    socket.emit("Message_Sent", {
-      message: `${sender} sent a message to the chat.`,
-    });
-  };
-
   const joinRoom = async () => {
     await axios
       .put(`http://localhost:4200/rooms/${_roomName}/join/${sender}`, {
-        responseType: "json",
-      })
-      .then((response) => {
-        if (response.status === 200 && response.data != null) {
-          setUpdate(Date.now());
-        }
-      })
-      .catch((error) => {
-        setError(error);
-      });
-  };
-
-  const leaveRoom = async () => {
-    await axios
-      .put(`http://localhost:4200/rooms/${_roomName}/leave/${sender}`, {
         responseType: "json",
       })
       .then((response) => {
@@ -120,7 +109,7 @@ export default function Chat({ socket }) {
       width: "100%",
     },
     chatCard: {
-      height: "70%",
+      height: "50%",
       overflow: "auto",
     },
     button: {
@@ -129,7 +118,21 @@ export default function Chat({ socket }) {
     },
   };
 
-  return (
+  return error !== null ? (
+    <Container style={style.container}>
+      <h1 style={style.errorStatus}>ERROR {error.status}</h1>
+      <h4 style={style.errorMessage}>{error.message}</h4>
+      <Button
+        style={style.button}
+        variant="dark"
+        onClick={() => {
+          navigate("/home");
+        }}
+      >
+        HOME
+      </Button>
+    </Container>
+  ) : (
     <>
       <Card style={style.chatCard}>
         <ListGroup>
@@ -161,7 +164,7 @@ export default function Chat({ socket }) {
               type="text"
               placeholder="Message..."
               name="content"
-              value={message.content}
+              value={message}
               onChange={handleInputChange}
               required
             />

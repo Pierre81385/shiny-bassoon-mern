@@ -18,6 +18,7 @@ export default function ROOMS_ALL({ socket }) {
   const [resp, setResp] = useState([
     { name: "", isPrivate: false, isDM: false, members: [""] },
   ]);
+  const [update, setUpdate] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState({
     roomCreated: false,
@@ -27,6 +28,11 @@ export default function ROOMS_ALL({ socket }) {
   const [isEnabled, setIsEnabled] = useState(false);
 
   const navigate = useNavigate();
+
+  socket.on("Update Members", (data) => {
+    console.log(`${data.username} joined this room`);
+    getRooms();
+  });
 
   const createRoom = async () => {
     await axios
@@ -50,6 +56,7 @@ export default function ROOMS_ALL({ socket }) {
             ...success,
             roomCreated: true,
           });
+          setUpdate(true);
         }
       })
       .catch((error) => {
@@ -58,7 +65,7 @@ export default function ROOMS_ALL({ socket }) {
           roomCreated: false,
         });
         setError(error);
-        console.log(error);
+        setUpdate(true);
       });
   };
 
@@ -78,6 +85,7 @@ export default function ROOMS_ALL({ socket }) {
             ...success,
             foundRooms: true,
           });
+          setUpdate(true);
         }
       })
       .catch((error) => {
@@ -86,6 +94,7 @@ export default function ROOMS_ALL({ socket }) {
           foundRooms: false,
         });
         setResp(error);
+        setUpdate(true);
       });
   };
 
@@ -100,6 +109,7 @@ export default function ROOMS_ALL({ socket }) {
             ...success,
             roomDeleted: true,
           });
+          setUpdate(true);
         }
       })
       .catch((error) => {
@@ -108,6 +118,7 @@ export default function ROOMS_ALL({ socket }) {
           roomDeleted: false,
         });
         setError(error);
+        setUpdate(true);
       });
   };
 
@@ -121,6 +132,7 @@ export default function ROOMS_ALL({ socket }) {
       createdBy: localStorage.getItem("_id"),
       members: [localStorage.getItem("username")],
     });
+    setUpdate(true);
   };
 
   const handleInputChange = (e) => {
@@ -129,14 +141,13 @@ export default function ROOMS_ALL({ socket }) {
       ...room,
       [name]: value,
     });
-    console.log(room.isPrivate);
   };
 
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
   useEffect(() => {
     getRooms();
-  }, [success.roomCreated, success.roomDeleted]);
+  }, [update]);
 
   const style = {
     form: {
@@ -152,7 +163,21 @@ export default function ROOMS_ALL({ socket }) {
     },
   };
 
-  return (
+  return error !== null ? (
+    <Container style={style.container}>
+      <h1 style={style.errorStatus}>ERROR {error.status}</h1>
+      <h4 style={style.errorMessage}>{error.message}</h4>
+      <Button
+        style={style.button}
+        variant="dark"
+        onClick={() => {
+          navigate("/home");
+        }}
+      >
+        HOME
+      </Button>
+    </Container>
+  ) : (
     <>
       <Form onSubmit={handleSubmit} style={style.form}>
         <Form.Group controlId="name">

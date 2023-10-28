@@ -39,17 +39,18 @@ connection.once("open", () => {
 const online = [];
 // Socket.IO setup
 io.on("connection", (socket) => {
-  console.log("A user connected");
+  console.log("a user connected");
 
   //notify of user login
   socket.on("Login", function (data) {
-    console.log("a user connected");
+    console.log("a user logged on");
     online.push(data.username);
     io.emit("Notify_Login", online);
   });
 
+  //notify of user logout
   socket.on("Logout", function (data) {
-    console.log("a user disconnected");
+    console.log("a user logged off");
     const index = online.indexOf(data.username);
     if (index > -1) {
       online.splice(index, 1);
@@ -57,14 +58,27 @@ io.on("connection", (socket) => {
     io.emit("Notify_Logout", online);
   });
 
+  //notify user joined room
+  socket.on("Join", (data) => {
+    console.log(`${data.username} has joined a chat room`);
+    io.emit("Update Members", data);
+  });
+
+  //notify user left room
+  socket.on("Leave", (data) => {
+    console.log(`${data.username} has left a chat room`);
+    io.emit("Update Members", data);
+  });
+
   // direct message real-time updates
   socket.on("DM_Sent", (data) => {
+    console.log("a user sent a DM");
     io.emit("DM_Received", data);
   });
 
   // chat room message real-time updates
   socket.on("Message_Sent", (data) => {
-    console.log(data);
+    console.log("a user posted in a chatroom");
     io.emit("Message_Received", data);
   });
 

@@ -12,7 +12,6 @@ export default function UserRegistration({ socket }) {
     email: "",
     password: "",
   });
-  const [resp, setResp] = useState([{}]);
   const [success, setSuccess] = useState(true);
   const [error, setError] = useState({
     status: 0,
@@ -33,7 +32,6 @@ export default function UserRegistration({ socket }) {
           email: "",
           password: "",
         });
-        setResp(response);
         setSuccess(true);
         navigate("/users/login");
       })
@@ -77,7 +75,6 @@ export default function UserRegistration({ socket }) {
     },
     formLabel: {},
     formControl: {},
-    rowButtons: {},
     button: {
       width: "10vw",
       margin: "10px",
@@ -91,7 +88,6 @@ export default function UserRegistration({ socket }) {
     <Container style={style.container}>
       <h1 style={style.errorStatus}>ERROR {error.status}</h1>
       <h4 style={style.errorMessage}>{error.message}</h4>
-      <p>{resp}</p>
       <Button
         style={style.button}
         variant="dark"

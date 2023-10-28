@@ -4,21 +4,23 @@ import { useNavigate } from "react-router-dom";
 import ListGroup from "react-bootstrap/esm/ListGroup";
 import ListGroupItem from "react-bootstrap/esm/ListGroupItem";
 import Badge from "react-bootstrap/esm/Badge";
+import Button from "react-bootstrap/esm/Button";
+import Container from "react-bootstrap/esm/Container";
 
-export default function USERS_ALL({ socket }) {
+export default function USERS_ALL({
+  socket,
+  roomName,
+  roomPermissions,
+  members,
+}) {
   const [users, setUsers] = useState([{}]);
   const [online, setOnline] = useState([]);
+  const [update, setUpdate] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  socket.on("Notify_Login", (active) => {
-    setOnline(active);
-  });
-
-  socket.on("Notify_Logout", (active) => {
-    setOnline(active);
-  });
-
   socket.on("DM_Received", (data) => {
+    console.log("socket.on DM_Received @Users_All");
     if (localStorage.getItem(data.from) === null) {
       localStorage.setItem(data.from, 1);
     } else {
@@ -27,6 +29,21 @@ export default function USERS_ALL({ socket }) {
       localStorage.setItem(data.from, num);
     }
   });
+
+  socket.on("Notify_Login", (data) => {
+    console.log("socket.on Notify_Login @Users_All");
+    setOnline(data);
+  });
+
+  socket.on("Notify_Logout", (data) => {
+    console.log("socket.on Notify_Logout @Users_All");
+    setOnline(data);
+  });
+
+  const notify_join = (user) => {
+    console.log("socket.emit Join @Users_All");
+    socket.emit("Join", { username: user });
+  };
 
   const getUsers = async () => {
     await axios
@@ -41,17 +58,51 @@ export default function USERS_ALL({ socket }) {
         setUsers(response.data);
       })
       .catch((error) => {
-        if (error != null) {
-          console.log(error);
+        setError(error);
+      });
+  };
+
+  const joinRoom = async (user) => {
+    await axios
+      .put(`http://localhost:4200/rooms/${roomName}/join/${user}`, {
+        responseType: "json",
+      })
+      .then((response) => {
+        if (response.status === 200 && response.data != null) {
+          notify_join(user);
+          setUpdate(true);
         }
+      })
+      .catch((error) => {
+        setError(error);
       });
   };
 
   useEffect(() => {
     getUsers();
-  }, []);
+  }, [roomName, roomPermissions, members, online, update]);
 
-  return (
+  const style = {
+    button: {
+      margin: "8px",
+    },
+  };
+
+  return error !== null ? (
+    <Container style={style.container}>
+      <h1 style={style.errorStatus}>ERROR {error.status}</h1>
+      <h4 style={style.errorMessage}>{error.message}</h4>
+      <Button
+        style={style.button}
+        variant="dark"
+        onClick={() => {
+          navigate("/home");
+        }}
+      >
+        HOME
+      </Button>
+    </Container>
+  ) : (
     <>
       <ListGroup>
         {users.map(({ _id, username }) => {
@@ -70,11 +121,23 @@ export default function USERS_ALL({ socket }) {
                 <div className="fw-bold">{username}</div>
                 {online.includes(username) ? "Online" : "Offline"}
               </div>
-              <Badge pill bg="dark">
-                {localStorage.getItem(username) === null
-                  ? 0
-                  : localStorage.getItem(username)}
-              </Badge>
+              {roomPermissions === true && !members.includes(username) ? (
+                <Button
+                  variant="dark"
+                  onClick={() => {
+                    joinRoom(username);
+                  }}
+                  style={style.button}
+                >
+                  Add User
+                </Button>
+              ) : (
+                <Badge pill bg="dark">
+                  {localStorage.getItem(username) === null
+                    ? 0
+                    : localStorage.getItem(username)}
+                </Badge>
+              )}
             </ListGroupItem>
           );
         })}

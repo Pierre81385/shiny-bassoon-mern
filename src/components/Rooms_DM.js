@@ -45,7 +45,6 @@ export default function Rooms_DM({ socket }) {
         }
       )
       .then((response) => {
-        console.log(response);
         if (response.status === 200 && response.data != null) {
           setDisplay(response.data.messages);
           setUpdate(response.data.updatedAt);
@@ -226,16 +225,6 @@ export default function Rooms_DM({ socket }) {
     getYourUserObject();
     checkDmRoomName();
     checkDmRoomNameAlt();
-    console.log({
-      FoundUser1: success.user1Found,
-      FoundUser2: success.user2Found,
-      RoomName1InUse: success.dmRoomNameFound,
-      RoomName2InUse: success.dmRoomNameAltFound,
-      RoomCreatedSuccessfully: success.dmRoomCreated,
-    });
-    console.log({
-      errors: error.message,
-    });
   }, [update]);
 
   const style = {

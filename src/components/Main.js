@@ -31,6 +31,7 @@ export default function Main({ socket }) {
       textAlign: "center",
     },
   };
+
   return (
     <Container style={style.mainContainer}>
       <Row style={style.header}>
@@ -67,7 +68,12 @@ export default function Main({ socket }) {
       <Row style={style.container}>
         <Col>
           <h2 style={style.header}>Users</h2>
-          <USERS_ALL socket={socket} />
+          <USERS_ALL
+            socket={socket}
+            roomName={""}
+            roomPermissions={false}
+            members={[]}
+          />
         </Col>
         <Col>
           <h2 style={style.header}>Chatrooms</h2>
