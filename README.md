@@ -10,7 +10,6 @@ It's been a while since I used React for a project, so this is a full MERN stack
 - Express.js and Node.js provide the backend server and API helped by Axios for requests, and JSON Web Tokens for authroization management.
 - React.js with Bootstrap provides the frontend.
 - Bringing everything together in real time, I've implemented a Socket.io server as the websocket provider.
-- Image/File upload/download capability is planned, which I'll take from my previous Instagram clone project.
 
 ### Jump in by installing the dependencies and running `npm run start`.
 
